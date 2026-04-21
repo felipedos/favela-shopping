@@ -1,7 +1,7 @@
-import { Link } from 'react-router';
-import { Wrench, Package, UtensilsCrossed } from 'lucide-react';
-import Header from '../components/Header';
-import favelaLogo from '../../imports/FAVEELA.png';
+import { Link } from "react-router";
+import { Wrench, Package, UtensilsCrossed } from "lucide-react";
+import Header from "../components/Header";
+import favelaLogo from "../../imports/FAVEELA.png";
 
 export default function Home() {
   return (
@@ -37,7 +37,9 @@ export default function Home() {
               <div className="bg-gradient-to-br from-purple-600 to-pink-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                 <Wrench className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-3">Serviços</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-3">
+                Serviços
+              </h2>
               <p className="text-gray-600">
                 Encontre prestadores de serviços na sua comunidade
               </p>
@@ -50,7 +52,9 @@ export default function Home() {
               <div className="bg-gradient-to-br from-blue-600 to-sky-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                 <Package className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-3">Produtos</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-3">
+                Produtos
+              </h2>
               <p className="text-gray-600">
                 Compre e venda produtos de qualidade
               </p>
@@ -64,9 +68,7 @@ export default function Home() {
                 <UtensilsCrossed className="w-10 h-10 text-white" />
               </div>
               <h2 className="text-2xl font-bold text-gray-800 mb-3">Comidas</h2>
-              <p className="text-gray-600">
-                Delícias e sabores da comunidade
-              </p>
+              <p className="text-gray-600">Delícias e sabores da comunidade</p>
             </Link>
           </div>
 
@@ -77,8 +79,12 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
               <div>
                 <div className="text-4xl mb-2">📱</div>
-                <h4 className="font-semibold text-gray-800 mb-1">1. Cadastre-se</h4>
-                <p className="text-sm text-gray-600">Crie sua conta gratuitamente</p>
+                <h4 className="font-semibold text-gray-800 mb-1">
+                  1. Cadastre-se
+                </h4>
+                <p className="text-sm text-gray-600">
+                  Crie sua conta gratuitamente
+                </p>
               </div>
               <div>
                 <div className="text-4xl mb-2">🔍</div>
@@ -87,8 +93,12 @@ export default function Home() {
               </div>
               <div>
                 <div className="text-4xl mb-2">💬</div>
-                <h4 className="font-semibold text-gray-800 mb-1">3. Conecte-se</h4>
-                <p className="text-sm text-gray-600">Contato direto via WhatsApp</p>
+                <h4 className="font-semibold text-gray-800 mb-1">
+                  3. Conecte-se
+                </h4>
+                <p className="text-sm text-gray-600">
+                  Contato direto via WhatsApp
+                </p>
               </div>
             </div>
           </div>
