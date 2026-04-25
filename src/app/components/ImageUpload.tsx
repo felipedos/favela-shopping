@@ -21,27 +21,43 @@ export default function ImageUpload({ onUpload, bucket, currentImage, label }: I
 
       setUploading(true);
       const file = e.target.files[0];
+
+      console.log('🔍 DEBUG - Iniciando upload:');
+      console.log('- Arquivo:', file.name, file.size, 'bytes');
+      console.log('- Bucket:', bucket);
+
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
+      console.log('- Caminho do arquivo:', filePath);
+
+      // Verificar se usuário está autenticado
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log('- Usuário autenticado:', user?.email || 'NÃO AUTENTICADO');
+
+      const { error: uploadError, data } = await supabase.storage
         .from(bucket)
         .upload(filePath, file);
 
       if (uploadError) {
+        console.error('❌ Erro do Supabase:', uploadError);
         throw uploadError;
       }
+
+      console.log('✅ Upload bem-sucedido:', data);
 
       const { data: { publicUrl } } = supabase.storage
         .from(bucket)
         .getPublicUrl(filePath);
 
+      console.log('✅ URL pública:', publicUrl);
+
       setPreview(publicUrl);
       onUpload(publicUrl);
-    } catch (error) {
-      alert('Erro ao fazer upload da imagem!');
-      console.error(error);
+    } catch (error: any) {
+      console.error('❌ ERRO COMPLETO:', error);
+      alert(`Erro ao fazer upload da imagem!\n\nDetalhes: ${error.message || error}`);
     } finally {
       setUploading(false);
     }
