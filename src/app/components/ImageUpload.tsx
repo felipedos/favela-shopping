@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabase';
 
 interface ImageUploadProps {
   onUpload: (url: string) => void;
-  bucket: string;
+  bucket: string; // Na verdade é a "pasta" dentro do bucket
   currentImage?: string | null;
   label?: string;
 }
@@ -24,20 +24,22 @@ export default function ImageUpload({ onUpload, bucket, currentImage, label }: I
 
       console.log('🔍 DEBUG - Iniciando upload:');
       console.log('- Arquivo:', file.name, file.size, 'bytes');
-      console.log('- Bucket:', bucket);
+      console.log('- Pasta (bucket):', bucket);
 
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `${fileName}`;
+      // Incluir a pasta no caminho: self/arquivo.png, documento/arquivo.png, etc
+      const filePath = `${bucket}/${fileName}`;
 
-      console.log('- Caminho do arquivo:', filePath);
+      console.log('- Caminho completo:', filePath);
 
       // Verificar se usuário está autenticado
       const { data: { user } } = await supabase.auth.getUser();
       console.log('- Usuário autenticado:', user?.email || 'NÃO AUTENTICADO');
 
+      // Usar o bucket "bucket" (que é o único bucket que existe)
       const { error: uploadError, data } = await supabase.storage
-        .from(bucket)
+        .from('bucket')  // ← MUDANÇA AQUI: sempre usar "bucket"
         .upload(filePath, file);
 
       if (uploadError) {
@@ -47,8 +49,9 @@ export default function ImageUpload({ onUpload, bucket, currentImage, label }: I
 
       console.log('✅ Upload bem-sucedido:', data);
 
+      // Obter URL pública
       const { data: { publicUrl } } = supabase.storage
-        .from(bucket)
+        .from('bucket')  // ← MUDANÇA AQUI: sempre usar "bucket"
         .getPublicUrl(filePath);
 
       console.log('✅ URL pública:', publicUrl);
