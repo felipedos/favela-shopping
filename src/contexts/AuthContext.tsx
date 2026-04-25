@@ -45,8 +45,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (session?.user) {
-        loadProfile(session.user.id);
+      if (session?.user?.email) {
+        loadProfile(session.user.email);
       } else {
         setLoading(false);
       }
@@ -55,8 +55,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (session?.user) {
-        loadProfile(session.user.id);
+      if (session?.user?.email) {
+        loadProfile(session.user.email);
       } else {
         setProfile(null);
         setLoading(false);
@@ -66,30 +66,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, []);
 
-  const loadProfile = async (userId: string) => {
+  const loadProfile = async (email: string) => {
     try {
-      // Buscar o email do usuário atual
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-
-      if (!currentUser?.email) {
-        console.error('Usuário não autenticado');
-        setLoading(false);
-        return;
-      }
+      console.log('🔍 Carregando perfil para email:', email);
 
       const { data, error } = await supabase
         .from('User')
         .select('*')
-        .eq('email', currentUser.email)
+        .eq('email', email)
         .single();
 
       if (error && error.code !== 'PGRST116') { // Ignora erro de "não encontrado"
         console.error('Error loading profile:', error);
       }
 
+      console.log('✅ Perfil carregado:', data);
       setProfile(data);
     } catch (error) {
-      console.error('Error loading profile:', error);
+      console.error('❌ Error loading profile:', error);
     } finally {
       setLoading(false);
     }
@@ -130,7 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const updateProfile = async (data: Partial<UserProfile>) => {
-    if (!user) return;
+    if (!user?.email) return;
 
     const { error } = await supabase
       .from('User')
@@ -139,8 +133,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         ...data,
       });
 
-    if (!error) {
-      loadProfile(user.id);
+    if (!error && user.email) {
+      loadProfile(user.email);
     }
   };
 
