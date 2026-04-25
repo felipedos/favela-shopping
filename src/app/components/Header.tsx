@@ -15,6 +15,13 @@ export default function Header({ showFullMenu = false }: HeaderProps) {
   const [showSobre, setShowSobre] = useState(false);
   const [showContato, setShowContato] = useState(false);
 
+  // Debug: ver se o usuário está sendo carregado
+  console.log('🔍 Header DEBUG:', {
+    user: user?.email || 'NÃO LOGADO',
+    profile: profile?.nome || 'SEM PERFIL',
+    hasUser: !!user,
+  });
+
   const handleLogout = async () => {
     await signOut();
     navigate('/');

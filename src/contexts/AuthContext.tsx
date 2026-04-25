@@ -7,6 +7,7 @@ interface UserProfile {
   nome: string | null;
   email: string | null;
   cpf: string | null;
+  cpfCnpj: string | null;
   whatsapp: string | null;
   ddd: string | null;
   cep: string | null;
@@ -22,6 +23,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   profile: UserProfile | null;
+  userProfile: UserProfile | null;
   loading: boolean;
   signUp: (email: string, password: string) => Promise<any>;
   signIn: (email: string, password: string) => Promise<any>;
@@ -66,13 +68,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loadProfile = async (userId: string) => {
     try {
+      // Buscar o email do usuário atual
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+
+      if (!currentUser?.email) {
+        console.error('Usuário não autenticado');
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('User')
         .select('*')
-        .eq('email', user?.email)
+        .eq('email', currentUser.email)
         .single();
 
-      if (error) throw error;
+      if (error && error.code !== 'PGRST116') { // Ignora erro de "não encontrado"
+        console.error('Error loading profile:', error);
+      }
+
       setProfile(data);
     } catch (error) {
       console.error('Error loading profile:', error);
@@ -133,10 +147,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isProfileComplete = () => {
     if (!profile) return false;
     return !!(
-      profile.cpf &&
+      (profile.cpf || profile.cpfCnpj) &&
       profile.whatsapp &&
       profile.cep &&
-      profile.self
+      profile.nome
     );
   };
 
@@ -144,6 +158,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     session,
     profile,
+    userProfile: profile,
     loading,
     signUp,
     signIn,
