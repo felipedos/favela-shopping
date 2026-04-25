@@ -64,11 +64,12 @@ export default function Header({ showFullMenu = false }: HeaderProps) {
               )}
 
               {user && (
-                <Link 
-                    to="/editar-perfil" 
-                    className="font-medium hover:text-white/80 transition"
+                <Link
+                  to="/editar-perfil"
+                  className="font-medium hover:text-white/80 transition"
+                  title="Editar meu perfil"
                 >
-                    {profile?.nome || 'Meu Perfil'}
+                  {profile?.nome || 'Meu Perfil'}
                 </Link>
               )}
 
@@ -82,7 +83,7 @@ export default function Header({ showFullMenu = false }: HeaderProps) {
                 </button>
               ) : (
                 <Link
-                  to="/login"
+                  to="/login-cadastro"
                   className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition"
                 >
                   <LogIn size={18} />
