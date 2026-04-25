@@ -18,6 +18,7 @@ import DetalhesComida from './pages/DetalhesComida';
 import ComidasContratadas from './pages/ComidasContratadas';
 import CadastrarComida from './pages/CadastrarComida';
 import AvaliarComida from './pages/AvaliarComida';
+import EditarPerfil from './pages/EditarPerfil';
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
       { index: true, Component: Home },
       { path: 'login', Component: LoginCadastro },
       { path: 'finalizar-cadastro', Component: FinalizarCadastro },
+      { path: 'editar-perfil', Component: EditarPerfil },
       { path: 'servicos', Component: Servicos },
       { path: 'servicos/:id', Component: DetalhesServico },
       { path: 'servicos-contratados', Component: ServicosContratados },

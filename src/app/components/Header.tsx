@@ -63,8 +63,13 @@ export default function Header({ showFullMenu = false }: HeaderProps) {
                 </div>
               )}
 
-              {user && profile?.nome && (
-                <span className="font-medium">{profile.nome}</span>
+              {user && (
+                <Link 
+                    to="/editar-perfil" 
+                    className="font-medium hover:text-white/80 transition"
+                >
+                    {profile?.nome || 'Meu Perfil'}
+                </Link>
               )}
 
               {user ? (
