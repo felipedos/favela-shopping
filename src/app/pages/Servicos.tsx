@@ -3,9 +3,10 @@ import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { Servico, CATEGORIAS_SERVICO } from '../../types';
-import { LogOut, Search, Filter } from 'lucide-react';
+import {  Wrench, LogOut, Search, Filter } from 'lucide-react';
 import SobreModal from '../components/SobreModal';
 import ContatoModal from '../components/ContatoModal';
+import Header from '../components/Header';
 
 export default function Servicos() {
   const { user, signOut, isProfileComplete } = useAuth();
@@ -59,42 +60,19 @@ export default function Servicos() {
   return (
     <>
       <div className="min-h-screen bg-gray-50">
-        <header className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 shadow-lg">
-          <div className="container mx-auto flex items-center justify-between flex-wrap gap-4">
-            <h1 className="text-2xl font-bold">Serviços</h1>
-
-            <nav className="flex items-center gap-4 flex-wrap">
-              <Link to="/" className="hover:underline">
-                Tela Inicial
-              </Link>
-              <Link to="/servicos-contratados" className="hover:underline">
-                Serviços Contratados
-              </Link>
-              {isProfileComplete() && (
-                <Link to="/cadastrar-servico" className="hover:underline">
-                  Cadastrar Serviços
-                </Link>
-              )}
-              <button onClick={() => setShowSobre(true)} className="hover:underline">
-                Sobre Nós
-              </button>
-              <button onClick={() => setShowContato(true)} className="hover:underline">
-                Contatos
-              </button>
-              {user && (
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition"
-                >
-                  <LogOut size={18} />
-                  Sair
-                </button>
-              )}
-            </nav>
-          </div>
-        </header>
+      <Header showFullMenu={true} />
 
         <div className="container mx-auto px-4 py-8">
+
+            <div className="bg-gradient-to-r from-emerald-600 to-green-600 rounded-2xl p-8 mb-8 text-white shadow-lg">
+            <div className="flex items-center gap-3 mb-3">
+                <Wrench className="w-10 h-10" />
+                <h1 className="text-4xl font-bold">Serviços</h1>
+            </div>
+            <p className="text-green-100 text-lg">
+                Encontre profissionais e serviços na sua comunidade
+            </p>
+            </div>
           <div className="bg-white rounded-lg shadow p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
               <Filter size={20} className="text-purple-600" />

@@ -90,7 +90,7 @@ export default function Header({ showFullMenu = false }: HeaderProps) {
                 </button>
               ) : (
                 <Link
-                  to="/login-cadastro"
+                  to="/login"
                   className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition"
                 >
                   <LogIn size={18} />
