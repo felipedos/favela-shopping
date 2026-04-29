@@ -19,10 +19,30 @@ export default function Comidas() {
   const [categoriaFilter, setCategoriaFilter] = useState('');
   const [showSobre, setShowSobre] = useState(false);
   const [showContato, setShowContato] = useState(false);
+  const [categorias, setCategorias] = useState<string[]>([]);
 
   useEffect(() => {
     loadComidas();
   }, [searchTerm, bairroFilter, categoriaFilter]);
+
+  useEffect(() => {
+    fetchCategorias();
+  }, []);
+
+  const fetchCategorias = async () => {
+    const { data, error } = await supabase
+      .from('Food')
+      .select('categoria');
+
+    if (error) {
+      console.error('Erro ao buscar categorias:', error);
+      return;
+    }
+
+    // Remove duplicadas
+    const unique = [...new Set(data.map(item => item.categoria).filter(Boolean))];
+    setCategorias(unique);
+  };
 
   const loadComidas = async () => {
     setLoading(true);
@@ -30,7 +50,7 @@ export default function Comidas() {
       let query = supabase
         .from('Food')
         .select('*')
-        .order('createdAt', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(10);
 
       if (searchTerm) {
@@ -42,7 +62,7 @@ export default function Comidas() {
       }
 
       if (categoriaFilter) {
-        query = query.eq('categoria', categoriaFilter);
+        query = query.ilike('categoria', categoriaFilter.toLowerCase());
       }
 
       const { data, error } = await query;
@@ -130,7 +150,7 @@ export default function Comidas() {
                   className="w-full px-4 py-2 border rounded-lg"
                 >
                   <option value="">Todas</option>
-                  {CATEGORIAS_COMIDA.map((cat) => (
+                  {categorias.map((cat) => (
                     <option key={cat} value={cat}>
                       {cat}
                     </option>

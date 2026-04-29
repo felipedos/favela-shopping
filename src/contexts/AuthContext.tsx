@@ -12,8 +12,12 @@ interface UserProfile {
   ddd: string | null;
   cep: string | null;
   bairro: string | null;
+  cidade: string | null;
+  estado: string | null;
   numero: number | null;
   complemento: string | null;
+  tipoUsuario: string | null;
+  plano: string | null;
   self: string | null;
   documento: string | null;
   favela: string | null;
@@ -124,17 +128,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const updateProfile = async (data: Partial<UserProfile>) => {
-    if (!user?.email) return;
+    if (!user?.email) {
+      console.warn('⚠️ Usuário sem email, abortando update');
+      return;
+    }
 
-    const { error } = await supabase
+    console.log('📤 Enviando dados para update:', data);
+    console.log('📧 Email usado no filtro:', user.email);
+
+    const { data: result, error } = await supabase
       .from('User')
-      .upsert({
-        email: user.email,
+      .update({
         ...data,
-      });
+      })
+      .eq('email', user.email)
+      .select(); // 🔥 ISSO AQUI É ESSENCIAL PRA DEBUG
 
-    if (!error && user.email) {
-      loadProfile(user.email);
+    console.log('📥 Resultado do Supabase:', result);
+    console.log('❗ Erro do Supabase:', error);
+
+    // 🚨 Diagnóstico automático
+    if (!error && (!result || result.length === 0)) {
+      console.warn('🚨 Nenhuma linha foi atualizada → provável problema de RLS ou filtro não encontrou registro');
+    }
+
+    if (error) {
+      console.error('❌ Erro ao atualizar perfil:', error);
+      throw error;
+    }
+
+    if (user.email) {
+      await loadProfile(user.email);
     }
   };
 

@@ -19,11 +19,31 @@ export default function Servicos() {
   const [categoriaFilter, setCategoriaFilter] = useState('');
   const [showSobre, setShowSobre] = useState(false);
   const [showContato, setShowContato] = useState(false);
+  const [categorias, setCategorias] = useState<string[]>([]);
 
   useEffect(() => {
     loadServicos();
   }, [searchTerm, bairroFilter, categoriaFilter]);
 
+  useEffect(() => {
+    fetchCategorias();
+  }, []);
+
+  const fetchCategorias = async () => {
+    const { data, error } = await supabase
+      .from('Servico')
+      .select('categoria');
+
+    if (error) {
+      console.error('Erro ao buscar categorias:', error);
+      return;
+    }
+
+    // Remove duplicadas
+    const unique = [...new Set(data.map(item => item.categoria).filter(Boolean))];
+    setCategorias(unique);
+  };
+  
   const loadServicos = async () => {
     setLoading(true);
     try {
@@ -38,7 +58,7 @@ export default function Servicos() {
       }
 
       if (categoriaFilter) {
-        query = query.eq('categoria', categoriaFilter);
+        query = query.ilike('categoria', categoriaFilter.toLowerCase());
       }
 
       const { data, error } = await query;
@@ -119,7 +139,7 @@ export default function Servicos() {
                   className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 >
                   <option value="">Todas</option>
-                  {CATEGORIAS_SERVICO.map((cat) => (
+                  {categorias.map((cat) => (
                     <option key={cat} value={cat}>
                       {cat}
                     </option>

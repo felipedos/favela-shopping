@@ -27,6 +27,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, Component: Home },
       { path: 'login', Component: LoginCadastro },
+      { path: 'login-cadastro', Component: LoginCadastro },
       { path: 'finalizar-cadastro', Component: FinalizarCadastro },
       { path: 'editar-perfil', Component: EditarPerfil },
       { path: 'servicos', Component: Servicos },

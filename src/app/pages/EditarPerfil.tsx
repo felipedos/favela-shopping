@@ -15,9 +15,13 @@ export default function EditarPerfil() {
     whatsapp: '',
     cep: '',
     bairro: '',
+    cidade: '',
+    estado: '',
     numero: '',
     complemento: '',
     favela: '',
+    tipoUsuario: '',
+    plano: '',
     self: '',
     documento: '',
   });
@@ -26,22 +30,39 @@ export default function EditarPerfil() {
 
   // Carregar dados do perfil quando o componente montar
   useEffect(() => {
-    if (userProfile) {
+    if (userProfile && formData.nome === '') {
       setFormData({
         nome: userProfile.nome || '',
-        cpf: userProfile.cpfCnpj || '',
+        cpf: userProfile.cpf || '',
         ddd: userProfile.ddd || '',
         whatsapp: userProfile.whatsapp || '',
         cep: userProfile.cep || '',
         bairro: userProfile.bairro || '',
+        cidade: userProfile.cidade || '',
+        estado: userProfile.estado || '',
         numero: userProfile.numero?.toString() || '',
         complemento: userProfile.complemento || '',
         favela: userProfile.favela || '',
+        tipoUsuario: userProfile.tipoUsuario || '',
+        plano: userProfile.plano || '',
         self: userProfile.self || '',
         documento: userProfile.documento || '',
       });
     }
   }, [userProfile]);
+
+  //Salvar temporariamente no localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('perfil-draft');
+    if (saved) {
+        setFormData(JSON.parse(saved));
+    }
+  }, []);
+
+  //E salvar sempre que mudar
+  useEffect(() => {
+    localStorage.setItem('perfil-draft', JSON.stringify(formData));
+  }, [formData]);
 
   // Redirecionar para login se não estiver autenticado
   useEffect(() => {
@@ -57,14 +78,18 @@ export default function EditarPerfil() {
     try {
       await updateProfile({
         nome: formData.nome,
-        cpfCnpj: formData.cpf,
+        cpf: formData.cpf,
         ddd: formData.ddd,
         whatsapp: formData.whatsapp,
         cep: formData.cep,
         bairro: formData.bairro,
+        cidade: formData.cidade,
+        estado: formData.estado,
         numero: formData.numero ? parseInt(formData.numero) : null,
         complemento: formData.complemento,
         favela: formData.favela,
+        tipoUsuario: formData.tipoUsuario,
+        plano: formData.plano,
         self: formData.self,
         documento: formData.documento,
       });
@@ -85,7 +110,7 @@ export default function EditarPerfil() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <Header showFullMenu={true} />
 
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
@@ -115,6 +140,37 @@ export default function EditarPerfil() {
                 required
                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                <label className="block text-sm font-medium mb-1">Tipo de Usuário</label>
+                <select
+                    value={formData.tipoUsuario}
+                    onChange={(e) => setFormData({ ...formData, tipoUsuario: e.target.value })}
+                    className="w-full px-4 py-2 border rounded-lg"
+                >
+                    <option value="">Selecione</option>
+                    <option value="Pessoa Física">Pessoa Física</option>
+                    <option value="MEI">MEI</option>
+                    <option value="EPP">EPP</option>
+                    <option value="Microempreendedor">Microempreendedor</option>
+                </select>
+                </div>
+                <div>
+                <label className="block text-sm font-medium mb-1">Plano</label>
+                <select
+                    value={formData.plano}
+                    onChange={(e) => setFormData({ ...formData, plano: e.target.value })}
+                    className="w-full px-4 py-2 border rounded-lg"
+                >
+                    <option value="">Selecione</option>
+                    <option value="Gratuito">Gratuito</option>
+                    <option value="Básico">Básico</option>
+                    <option value="Intermediário">Intermediário</option>
+                    <option value="Full">Full</option>
+                </select>
+                </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
@@ -200,6 +256,36 @@ export default function EditarPerfil() {
                   className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                    <label className="block text-sm font-medium mb-1">Cidade</label>
+                    <input
+                    type="text"
+                    value={formData.cidade}
+                    onChange={(e) => setFormData({ ...formData, cidade: e.target.value })}
+                    className="w-full px-4 py-2 border rounded-lg"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium mb-1">Estado (UF)</label>
+                    <select
+                    value={formData.estado}
+                    onChange={(e) => setFormData({ ...formData, estado: e.target.value })}
+                    className="w-full px-4 py-2 border rounded-lg"
+                    >
+                    <option value="">Selecione</option>
+                    {[
+                        'AC','AL','AP','AM','BA','CE','DF','ES','GO','MA',
+                        'MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN',
+                        'RS','RO','RR','SC','SP','SE','TO'
+                    ].map(uf => (
+                        <option key={uf} value={uf}>{uf}</option>
+                    ))}
+                    </select>
+                </div>
             </div>
 
             <div>
