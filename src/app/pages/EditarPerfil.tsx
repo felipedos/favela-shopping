@@ -76,7 +76,8 @@ export default function EditarPerfil() {
     setLoading(true);
 
     try {
-      await updateProfile({
+        // ✅ Atualiza perfil no banco
+        await updateProfile({
         nome: formData.nome,
         cpf: formData.cpf,
         ddd: formData.ddd,
@@ -92,15 +93,43 @@ export default function EditarPerfil() {
         plano: formData.plano,
         self: formData.self,
         documento: formData.documento,
-      });
+        });
 
-      alert('Perfil atualizado com sucesso!');
-      navigate('/');
+        // ✅ Dispara envio de e-mail (NÃO trava o usuário)
+        fetch('https://mrjcfouzvlojyibszhzi.supabase.co/functions/v1/resend-email', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            to: 'felipedos@gmail.com',
+            subject: 'Atualização de Perfil',
+            html: `
+            <h2>Usuário atualizou o perfil</h2>
+            <p><strong>Nome:</strong> ${formData.nome}</p>
+            <p><strong>Email:</strong> ${user?.email}</p>
+            <p><strong>CPF:</strong> ${formData.cpf}</p>
+            <p><strong>DDD:</strong> ${formData.ddd}</p>
+            <p><strong>WhatsApp:</strong> ${formData.whatsapp}</p>
+            <p><strong>Tipo Usuário:</strong> ${formData.tipoUsuario}</p>
+            <p><strong>Plano:</strong> ${formData.plano}</p>
+            <p><strong>CEP:</strong> ${formData.cep}</p>
+            <p><strong>Bairro:</strong> ${formData.bairro}</p>
+            `,
+        }),
+        }).catch((err) => {
+        console.error('Erro ao enviar e-mail:', err);
+        });
+
+        // ✅ Feedback para o usuário
+        alert('Perfil atualizado com sucesso!');
+        navigate('/');
+
     } catch (error) {
-      alert('Erro ao atualizar perfil');
-      console.error(error);
+        alert('Erro ao atualizar perfil');
+        console.error(error);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
   };
 
