@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { LogIn, LogOut, User } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SobreModal from './SobreModal';
 import ContatoModal from './ContatoModal';
 
@@ -14,6 +14,23 @@ export default function Header({ showFullMenu = false }: HeaderProps) {
   const navigate = useNavigate();
   const [showSobre, setShowSobre] = useState(false);
   const [showContato, setShowContato] = useState(false);
+
+  useEffect(() => {
+    const testarUsuario = async () => {
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+
+      console.log('🔐 AUTH USER:', authData.user);
+      console.log('❌ AUTH ERROR:', authError);
+
+      const { data: meuId, error: idError } = await supabase
+        .rpc('get_my_user_id');
+
+      console.log('🆔 MEU USER ID:', meuId);
+      console.log('❌ ID ERROR:', idError);
+    };
+
+    testarUsuario();
+  }, []);
 
   // Debug: ver se o usuário está sendo carregado
   console.log('🔍 Header DEBUG:', {

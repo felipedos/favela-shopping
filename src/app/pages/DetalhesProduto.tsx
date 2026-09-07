@@ -4,6 +4,7 @@ import { ArrowLeft, MessageCircle, MapPin, Package, Tag, DollarSign } from 'luci
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Produto } from '../../types';
+import Chat from '../components/chat/Chat';
 import Header from '../components/Header';
 
 export default function DetalhesProduto() {
@@ -11,6 +12,15 @@ export default function DetalhesProduto() {
   const { user } = useAuth();
   const [produto, setProduto] = useState<Produto | null>(null);
   const [loading, setLoading] = useState(true);
+  const [chatAberto, setChatAberto] = useState(false);
+
+  const handleAbrirChat = () => {
+    if (!user) {
+      return;
+    }
+
+    setChatAberto(true);
+  };
 
   useEffect(() => {
     if (id) {
@@ -156,18 +166,35 @@ export default function DetalhesProduto() {
             </div>
 
             {user ? (
-              <button
-                onClick={handleWhatsAppClick}
-                className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
-              >
-                <MessageCircle className="w-6 h-6" />
-                Entrar em Contato pelo WhatsApp
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={handleAbrirChat}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <MessageCircle className="w-6 h-6" />
+                  Entrar em Contato
+                </button>
+
+                {chatAberto && (
+                  <Chat
+                    prestadorId={produto.id_usuario}
+                    tipoAnuncio="produto"
+                    anuncioId={produto.id}
+                    nomeDestinatario={
+                      produto.nome || 'Vendedor'
+                    }
+                    abertoInicialmente={true}
+                    onFechar={() => setChatAberto(false)}
+                  />
+                )}
+              </>
             ) : (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
                 <p className="text-yellow-800 mb-3">
                   Faça login para entrar em contato com o vendedor
                 </p>
+
                 <Link
                   to="/login-cadastro"
                   className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
