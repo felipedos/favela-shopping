@@ -19,6 +19,7 @@ import ComidasContratadas from './pages/ComidasContratadas';
 import CadastrarComida from './pages/CadastrarComida';
 import AvaliarComida from './pages/AvaliarComida';
 import EditarPerfil from './pages/EditarPerfil';
+import Conversas from './pages/Conversas';
 
 export const router = createBrowserRouter([
   {
@@ -45,6 +46,7 @@ export const router = createBrowserRouter([
       { path: 'comidas-contratadas', Component: ComidasContratadas },
       { path: 'cadastrar-comida', Component: CadastrarComida },
       { path: 'avaliar-comida/:id', Component: AvaliarComida },
+      { path: 'conversas', Component: Conversas },
     ],
   },
 ]);
