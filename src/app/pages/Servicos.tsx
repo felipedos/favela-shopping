@@ -7,12 +7,15 @@ import {  Wrench, LogOut, Search, Filter } from 'lucide-react';
 import SobreModal from '../components/SobreModal';
 import ContatoModal from '../components/ContatoModal';
 import Header from '../components/Header';
+import PrivateImage from '../components/PrivateImage';
 
 export default function Servicos() {
   const { user, signOut, isProfileComplete } = useAuth();
   const navigate = useNavigate();
 
   const [servicos, setServicos] = useState<Servico[]>([]);
+  const [fotoUrls, setFotoUrls] = useState<Record<string, string>>({});
+
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [bairroFilter, setBairroFilter] = useState('');
@@ -46,27 +49,98 @@ export default function Servicos() {
   
   const loadServicos = async () => {
     setLoading(true);
+
     try {
-      let query = supabase.from('Servico').select('*').order('created_at', { ascending: false }).limit(10);
+      let query = supabase
+        .from('Servico')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10);
 
       if (searchTerm) {
-        query = query.ilike('nomeServico', `%${searchTerm}%`);
+        query = query.ilike(
+          'nomeServico',
+          `%${searchTerm}%`
+        );
       }
 
       if (bairroFilter) {
-        query = query.eq('bairro', bairroFilter);
+        query = query.eq(
+          'bairro',
+          bairroFilter
+        );
       }
 
       if (categoriaFilter) {
-        query = query.ilike('categoria', categoriaFilter.toLowerCase());
+        query = query.ilike(
+          'categoria',
+          categoriaFilter.toLowerCase()
+        );
       }
 
       const { data, error } = await query;
 
-      if (error) throw error;
-      setServicos(data || []);
+      if (error) {
+        throw error;
+      }
+
+      const servicosCarregados =
+        (data || []) as Servico[];
+
+      setServicos(servicosCarregados);
+
+      const caminhosFotos =
+        servicosCarregados
+          .map((servico) => servico.foto)
+          .filter(
+            (foto): foto is string =>
+              Boolean(foto)
+          );
+
+      if (caminhosFotos.length === 0) {
+        setFotoUrls({});
+        return;
+      }
+
+      const {
+        data: signedData,
+        error: signedError,
+      } = await supabase.storage
+        .from('dados-privados')
+        .createSignedUrls(
+          caminhosFotos,
+          60 * 60
+        );
+
+      if (signedError) {
+        console.error(
+          'Erro ao gerar URLs das imagens:',
+          signedError
+        );
+
+        setFotoUrls({});
+        return;
+      }
+
+      const urls: Record<string, string> = {};
+
+      signedData?.forEach((item) => {
+        if (
+          item.path &&
+          item.signedUrl
+        ) {
+          urls[item.path] =
+            item.signedUrl;
+        }
+      });
+
+      setFotoUrls(urls);
+
     } catch (error) {
-      console.error('Error loading servicos:', error);
+      console.error(
+        'Erro ao carregar serviços:',
+        error
+      );
     } finally {
       setLoading(false);
     }
@@ -161,9 +235,16 @@ export default function Servicos() {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {servicos.map((servico) => (
                 <div key={servico.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
-                  {servico.foto && (
-                    <img src={servico.foto} alt={servico.nomeServico || ''} className="w-full h-48 object-cover" />
-                  )}
+                  {servico.foto &&
+                    fotoUrls[servico.foto] && (
+                      <img
+                        src={fotoUrls[servico.foto]}
+                        alt={servico.nomeServico || ''}
+                        className="w-full h-48 object-cover"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    )}
                   <div className="p-4">
                     <h3 className="text-lg font-bold mb-2">{servico.nomeServico}</h3>
                     <p className="text-gray-600 text-sm mb-1">

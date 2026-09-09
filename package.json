@@ -1,7 +1,7 @@
 {
   "name": "favela-shopping",
   "private": true,
-  "version": "1.0.8-rc3",
+  "version": "1.0.8-rc5",
   "type": "module",
   "scripts": {
     "dev": "vite",

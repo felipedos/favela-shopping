@@ -5,12 +5,15 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Food } from '../../types';
 import Header from '../components/Header';
+import Chat from '../components/chat/Chat';
+import PrivateImage from '../components/PrivateImage';
 
 export default function DetalhesComida() {
   const { id } = useParams();
   const { user } = useAuth();
   const [comida, setComida] = useState<Food | null>(null);
   const [loading, setLoading] = useState(true);
+  const [chatAberto, setChatAberto] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -35,26 +38,12 @@ export default function DetalhesComida() {
     }
   }
 
-  async function handleWhatsAppClick() {
-    if (!comida || !user) return;
-
-    try {
-      await supabase.from('Avaliacao').insert({
-        emailCliente: user.email,
-        emailVendedor: comida.email,
-        foodId: comida.id,
-        avaPrestador: 0,
-        avaConsumidor: 0,
-      });
-
-      const mensagem = encodeURIComponent(
-        `Eu vim pelo aplicativo 'Favela Shopping' e gostaria de pedir: ${comida.nomeFood}`
-      );
-      const whatsapp = `https://wa.me/55${comida.ddd}${comida.whatsapp}?text=${mensagem}`;
-      window.open(whatsapp, '_blank');
-    } catch (error) {
-      console.error('Erro ao registrar contato:', error);
+  function handleAbrirChat() {
+    if (!user) {
+      return;
     }
+
+    setChatAberto(true);
   }
 
   if (loading) {
@@ -98,8 +87,8 @@ export default function DetalhesComida() {
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           {comida.foto && (
             <div className="h-96 overflow-hidden">
-              <img
-                src={comida.foto}
+              <PrivateImage
+                path={comida.foto}
                 alt={comida.nomeFood}
                 className="w-full h-full object-cover"
               />
@@ -156,18 +145,37 @@ export default function DetalhesComida() {
             </div>
 
             {user ? (
-              <button
-                onClick={handleWhatsAppClick}
-                className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
-              >
-                <MessageCircle className="w-6 h-6" />
-                Entrar em Contato pelo WhatsApp
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={handleAbrirChat}
+                  className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
+                >
+                  <MessageCircle className="w-6 h-6" />
+                  Entrar em Contato
+                </button>
+
+                {chatAberto && comida && (
+                  <Chat
+                    prestadorId={comida.id_usuario}
+                    tipoAnuncio="comida"
+                    anuncioId={comida.id}
+                    nomeDestinatario={
+                      comida.nomeFood ||
+                      comida.nome ||
+                      'Vendedor'
+                    }
+                    abertoInicialmente={true}
+                    onFechar={() => setChatAberto(false)}
+                  />
+                )}
+              </>
             ) : (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
                 <p className="text-yellow-800 mb-3">
                   Faça login para entrar em contato com o vendedor
                 </p>
+
                 <Link
                   to="/login-cadastro"
                   className="inline-block bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition-colors"

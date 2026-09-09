@@ -6,6 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Produto } from '../../types';
 import Chat from '../components/chat/Chat';
 import Header from '../components/Header';
+import PrivateImage from '../components/PrivateImage';
 
 export default function DetalhesProduto() {
   const { id } = useParams();
@@ -108,8 +109,8 @@ export default function DetalhesProduto() {
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           {produto.foto && (
             <div className="h-96 overflow-hidden">
-              <img
-                src={produto.foto}
+              <PrivateImage
+                path={produto.foto}
                 alt={produto.nomeProduto}
                 className="w-full h-full object-cover"
               />

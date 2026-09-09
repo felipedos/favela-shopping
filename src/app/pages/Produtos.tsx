@@ -7,12 +7,15 @@ import { Search, Filter, Package } from 'lucide-react';
 import SobreModal from '../components/SobreModal';
 import ContatoModal from '../components/ContatoModal';
 import Header from '../components/Header';
+import PrivateImage from '../components/PrivateImage';
 
 export default function Produtos() {
   const { signOut } = useAuth();
   const navigate = useNavigate();
 
   const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [fotoUrls, setFotoUrls] = useState<Record<string, string>>({});
+
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [bairroFilter, setBairroFilter] = useState('');
@@ -46,6 +49,7 @@ export default function Produtos() {
 
   const loadProdutos = async () => {
     setLoading(true);
+
     try {
       let query = supabase
         .from('Produto')
@@ -54,23 +58,108 @@ export default function Produtos() {
         .limit(10);
 
       if (searchTerm) {
-        query = query.ilike('nomeProduto', `%${searchTerm}%`);
+        query = query.ilike(
+          'nomeProduto',
+          `%${searchTerm}%`
+        );
       }
 
       if (bairroFilter) {
-        query = query.ilike('bairro', `%${bairroFilter}%`);
+        query = query.ilike(
+          'bairro',
+          `%${bairroFilter}%`
+        );
       }
 
       if (categoriaFilter) {
-        query = query.ilike('categoria', categoriaFilter.toLowerCase());
+        query = query.ilike(
+          'categoria',
+          categoriaFilter.toLowerCase()
+        );
       }
 
       const { data, error } = await query;
 
-      if (error) throw error;
-      setProdutos(data || []);
+      if (error) {
+        throw error;
+      }
+
+      const produtosCarregados =
+        (data || []) as Produto[];
+
+      setProdutos(produtosCarregados);
+
+      /*
+      * Pega somente os caminhos válidos das fotos.
+      */
+      const caminhosFotos =
+        produtosCarregados
+          .map((produto) => produto.foto)
+          .filter(
+            (foto): foto is string =>
+              Boolean(foto)
+          );
+
+      /*
+      * Se não houver fotos,
+      * não precisamos chamar o Storage.
+      */
+      if (caminhosFotos.length === 0) {
+        setFotoUrls({});
+        return;
+      }
+
+      /*
+      * Uma única chamada para gerar
+      * todas as signed URLs.
+      */
+      const {
+        data: signedData,
+        error: signedError,
+      } = await supabase.storage
+        .from('dados-privados')
+        .createSignedUrls(
+          caminhosFotos,
+          60 * 60
+        );
+
+      if (signedError) {
+        console.error(
+          'Erro ao gerar URLs das imagens:',
+          signedError
+        );
+
+        setFotoUrls({});
+        return;
+      }
+
+      /*
+      * Cria um mapa:
+      *
+      * {
+      *   "produto/foto1.jpg": "https://...",
+      *   "produto/foto2.jpg": "https://..."
+      * }
+      */
+      const urls: Record<string, string> = {};
+
+      signedData?.forEach((item) => {
+        if (
+          item.path &&
+          item.signedUrl
+        ) {
+          urls[item.path] =
+            item.signedUrl;
+        }
+      });
+
+      setFotoUrls(urls);
+
     } catch (error) {
-      console.error('Erro ao carregar produtos:', error);
+      console.error(
+        'Erro ao carregar produtos:',
+        error
+      );
     } finally {
       setLoading(false);
     }
@@ -177,13 +266,16 @@ export default function Produtos() {
                   key={produto.id}
                   className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition"
                 >
-                  {produto.foto && (
-                    <img
-                      src={produto.foto}
-                      alt={produto.nomeProduto}
-                      className="w-full h-48 object-cover"
-                    />
-                  )}
+                  {produto.foto &&
+                    fotoUrls[produto.foto] && (
+                      <img
+                        src={fotoUrls[produto.foto]}
+                        alt={produto.nomeProduto || ''}
+                        className="w-full h-48 object-cover"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    )}
 
                   <div className="p-4">
                     <h3 className="text-lg font-bold mb-2">

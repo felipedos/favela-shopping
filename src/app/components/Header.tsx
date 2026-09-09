@@ -15,6 +15,7 @@ import { useAuth } from '../../contexts/AuthContext';
 
 import SobreModal from './SobreModal';
 import ContatoModal from './ContatoModal';
+import PrivateImage from './PrivateImage';
 
 interface HeaderProps {
   showFullMenu?: boolean;
@@ -276,16 +277,16 @@ export default function Header({
             <div className="flex items-center gap-2 border-l border-white/30 pl-4">
 
               {user &&
-              profile?.self ? (
-                <img
-                  src={profile.self}
-                  alt={
-                    profile.nome ||
-                    'Usuário'
-                  }
-                  className="w-10 h-10 rounded-full object-cover border-2 border-white"
-                />
-              ) : (
+                profile?.self ? (
+                  <PrivateImage
+                    path={profile.self}
+                    alt={
+                      profile.nome ||
+                      'Usuário'
+                    }
+                    className="w-10 h-10 rounded-full object-cover border-2 border-white"
+                  />
+                ) : (
                 <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                   <User size={22} />
                 </div>
@@ -403,8 +404,8 @@ export default function Header({
               className="flex items-center gap-3"
             >
               {profile?.self ? (
-                <img
-                  src={profile.self}
+                <PrivateImage
+                  path={profile.self}
                   alt={
                     profile.nome ||
                     'Usuário'

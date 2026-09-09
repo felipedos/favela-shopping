@@ -5,6 +5,8 @@ import { supabase } from '../../lib/supabase';
 import { Servico } from '../../types';
 import { ArrowLeft, MessageCircle } from 'lucide-react';
 import Header from '../components/Header';
+import Chat from '../components/chat/Chat';
+import PrivateImage from '../components/PrivateImage';
 
 export default function DetalhesServico() {
   const { id } = useParams();
@@ -13,6 +15,7 @@ export default function DetalhesServico() {
 
   const [servico, setServico] = useState<Servico | null>(null);
   const [loading, setLoading] = useState(true);
+  const [chatAberto, setChatAberto] = useState(false);
 
   useEffect(() => {
     loadServico();
@@ -31,28 +34,12 @@ export default function DetalhesServico() {
     }
   };
 
-  const handleContactar = async () => {
-    if (!servico) return;
-
-    if (user && profile) {
-      await supabase.from('Avaliacao').insert({
-        id_servico: servico.id,
-        emailCliente: profile.email,
-        emailPrestador: servico.email,
-        nomeCliente: profile.nome,
-        nomeServico: servico.nomeServico,
-        bairroCliente: profile.bairro,
-        bairroServico: servico.bairro,
-        Tipo: 'servico',
-        created_at: new Date().toISOString(),
-      });
+  const handleAbrirChat = () => {
+    if (!user) {
+      return;
     }
 
-    const mensagem = encodeURIComponent(
-      `Eu vim pelo aplicativo 'Favela Shopping' e gostaria de contratar seus serviços`
-    );
-    const whatsapp = `https://wa.me/55${servico.ddd}${servico.whatsapp}?text=${mensagem}`;
-    window.open(whatsapp, '_blank');
+    setChatAberto(true);
   };
 
   if (loading) {
@@ -84,7 +71,7 @@ export default function DetalhesServico() {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
           {servico.foto && (
-            <img src={servico.foto} alt={servico.nomeServico || ''} className="w-full h-96 object-cover" />
+            <PrivateImage path={servico.foto} alt={servico.nomeServico || ''} className="w-full h-96 object-cover" />
           )}
 
           <div className="p-6">
@@ -123,6 +110,7 @@ export default function DetalhesServico() {
 
             <div className="flex gap-4">
               <button
+                type="button"
                 onClick={() => navigate(-1)}
                 className="flex items-center gap-2 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
               >
@@ -130,14 +118,40 @@ export default function DetalhesServico() {
                 Voltar
               </button>
 
-              <button
-                onClick={handleContactar}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-              >
-                <MessageCircle size={20} />
-                Contactar via WhatsApp
-              </button>
+              {user ? (
+                <button
+                  type="button"
+                  onClick={handleAbrirChat}
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+                >
+                  <MessageCircle size={20} />
+                  Entrar em Contato
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => navigate('/login-cadastro')}
+                  className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+                >
+                  Faça login para entrar em contato
+                </button>
+              )}
             </div>
+
+            {chatAberto && servico && (
+              <Chat
+                prestadorId={servico.id_usuario}
+                tipoAnuncio="servico"
+                anuncioId={servico.id}
+                nomeDestinatario={
+                  servico.nomeServico ||
+                  servico.nome ||
+                  'Prestador'
+                }
+                abertoInicialmente={true}
+                onFechar={() => setChatAberto(false)}
+              />
+            )}
           </div>
         </div>
       </div>
