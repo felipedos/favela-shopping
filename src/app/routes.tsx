@@ -20,6 +20,7 @@ import CadastrarComida from './pages/CadastrarComida';
 import AvaliarComida from './pages/AvaliarComida';
 import EditarPerfil from './pages/EditarPerfil';
 import Conversas from './pages/Conversas';
+import GerenciarCatalogo from './pages/GerenciarCatalogo';
 
 export const router = createBrowserRouter([
   {
@@ -47,6 +48,7 @@ export const router = createBrowserRouter([
       { path: 'cadastrar-comida', Component: CadastrarComida },
       { path: 'avaliar-comida/:id', Component: AvaliarComida },
       { path: 'conversas', Component: Conversas },
+      { path: 'catalogo/:tipoAnuncio/:anuncioId', Component: GerenciarCatalogo },
     ],
   },
 ]);
