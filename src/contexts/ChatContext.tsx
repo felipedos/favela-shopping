@@ -176,7 +176,13 @@ export function ChatProvider({
         /**
          * Abre automaticamente a caixa do chat.
          */
-        setChatRecebidoAberto(true);
+        const paginaEstaAtiva =
+          document.visibilityState === 'visible' &&
+          document.hasFocus();
+
+        if (paginaEstaAtiva) {
+          setChatRecebidoAberto(true);
+        }
       } catch (error) {
         console.error(
           '❌ Erro ao processar mensagem recebida:',

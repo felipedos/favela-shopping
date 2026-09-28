@@ -109,17 +109,22 @@ export default function Chat({
       });
 
       // Se o chat estiver aberto, a mensagem recebida é marcada como lida.
+      const paginaEstaAtiva =
+        document.visibilityState === 'visible' &&
+        document.hasFocus();
+
       if (
         aberto &&
+        paginaEstaAtiva &&
         novaMensagem.remetente_id !== meuUserId
       ) {
         marcarMensagensComoLidas(
-            conversa.id
+          conversa.id
         ).catch((error) => {
-            console.error(
+          console.error(
             '❌ Erro ao marcar mensagem como lida:',
             error
-            );
+          );
         });
       }
     });
@@ -191,9 +196,15 @@ const carregarConversa =
           mensagensCarregadas
         );
 
-        await marcarMensagensComoLidas(
-          conversaInicial.id
-        );
+        const paginaEstaAtiva =
+          document.visibilityState === 'visible' &&
+          document.hasFocus();
+
+        if (paginaEstaAtiva) {
+          await marcarMensagensComoLidas(
+            conversaInicial.id
+          );
+        }
 
         return;
       }
@@ -247,9 +258,15 @@ const carregarConversa =
         mensagensCarregadas
       );
 
-      await marcarMensagensComoLidas(
-        resultado.conversa.id
-      );
+      const paginaEstaAtiva =
+        document.visibilityState === 'visible' &&
+        document.hasFocus();
+
+      if (paginaEstaAtiva) {
+        await marcarMensagensComoLidas(
+          resultado.conversa.id
+        );
+      }
     } catch (error) {
       console.error(
         '❌ Erro ao carregar chat:',
