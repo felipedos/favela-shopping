@@ -15,6 +15,10 @@ export interface Conversa {
   updated_at: string;
 }
 
+export type TipoMensagem =
+  | 'texto'
+  | 'imagem';
+
 export interface Mensagem {
   id: number;
   conversa_id: number;
@@ -22,6 +26,8 @@ export interface Mensagem {
   texto: string;
   created_at: string;
   lida: boolean;
+  tipo_mensagem: TipoMensagem;
+  arquivo_path: string | null;
 }
 
 /**

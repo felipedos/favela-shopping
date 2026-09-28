@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   Trash2,
   Plus,
+  Pencil,
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
@@ -20,6 +21,7 @@ import {
   excluirCategoria,
   buscarItens,
   criarItem,
+  atualizarItem,
   excluirItem,
 } from '../../services/catalogoService';
 
@@ -37,33 +39,46 @@ export default function GerenciarCatalogo() {
     anuncioId: string;
   }>();
 
-  const [categorias, setCategorias] = useState<CategoriaAnuncio[]>([]);
-  const [itensPorCategoria, setItensPorCategoria] = useState<
-    Record<number, ItemAnuncio[]>
-  >({});
+  const [categorias, setCategorias] = useState<
+    CategoriaAnuncio[]
+  >([]);
 
-  const [categoriaComFormulario, setCategoriaComFormulario] =
-    useState<number | null>(null);
+  const [itensPorCategoria, setItensPorCategoria] =
+    useState<Record<number, ItemAnuncio[]>>({});
 
-  const [categoriasAbertas, setCategoriasAbertas] = useState<
-    Record<number, boolean>
-  >({});
+  const [
+    categoriaComFormulario,
+    setCategoriaComFormulario,
+  ] = useState<number | null>(null);
+
+  const [itemEmEdicao, setItemEmEdicao] =
+    useState<ItemAnuncio | null>(null);
+
+  const [categoriasAbertas, setCategoriasAbertas] =
+    useState<Record<number, boolean>>({});
 
   const [loading, setLoading] = useState(true);
-  const [erro, setErro] = useState<string | null>(null);
+
+  const [erro, setErro] = useState<string | null>(
+    null
+  );
 
   const [anuncio, setAnuncio] = useState<{
     nome: string;
     foto: string | null;
   } | null>(null);
 
-  const [ehProprietario, setEhProprietario] = useState(false);
+  const [ehProprietario, setEhProprietario] =
+    useState(false);
 
-  const [verificandoProprietario, setVerificandoProprietario] =
-    useState(true);
+  const [
+    verificandoProprietario,
+    setVerificandoProprietario,
+  ] = useState(true);
 
   const tipoValido: TipoAnuncio | null =
-    tipoAnuncio === 'produto' || tipoAnuncio === 'comida'
+    tipoAnuncio === 'produto' ||
+    tipoAnuncio === 'comida'
       ? tipoAnuncio
       : null;
 
@@ -86,7 +101,9 @@ export default function GerenciarCatalogo() {
       try {
         const resultados = await Promise.all(
           listaCategorias.map(async (categoria) => {
-            const itens = await buscarItens(categoria.id);
+            const itens = await buscarItens(
+              categoria.id
+            );
 
             return {
               categoriaId: categoria.id,
@@ -95,10 +112,14 @@ export default function GerenciarCatalogo() {
           })
         );
 
-        const mapa: Record<number, ItemAnuncio[]> = {};
+        const mapa: Record<
+          number,
+          ItemAnuncio[]
+        > = {};
 
         resultados.forEach((resultado) => {
-          mapa[resultado.categoriaId] = resultado.itens;
+          mapa[resultado.categoriaId] =
+            resultado.itens;
         });
 
         setItensPorCategoria(mapa);
@@ -116,43 +137,46 @@ export default function GerenciarCatalogo() {
     []
   );
 
-  const carregarCategorias = useCallback(async () => {
-    if (!tipoValido || !parametrosValidos) {
-      setErro('Anúncio inválido.');
-      setLoading(false);
-      return;
-    }
+  const carregarCategorias = useCallback(
+    async () => {
+      if (!tipoValido || !parametrosValidos) {
+        setErro('Anúncio inválido.');
+        setLoading(false);
+        return;
+      }
 
-    try {
-      setLoading(true);
-      setErro(null);
+      try {
+        setLoading(true);
+        setErro(null);
 
-      const dados = await buscarCategorias(
-        tipoValido,
-        idAnuncio
-      );
+        const dados = await buscarCategorias(
+          tipoValido,
+          idAnuncio
+        );
 
-      setCategorias(dados);
+        setCategorias(dados);
 
-      await carregarItensDasCategorias(dados);
-    } catch (error) {
-      console.error(
-        'Erro ao carregar categorias:',
-        error
-      );
+        await carregarItensDasCategorias(dados);
+      } catch (error) {
+        console.error(
+          'Erro ao carregar categorias:',
+          error
+        );
 
-      setErro(
-        'Não foi possível carregar as categorias.'
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [
-    tipoValido,
-    idAnuncio,
-    parametrosValidos,
-    carregarItensDasCategorias,
-  ]);
+        setErro(
+          'Não foi possível carregar as categorias.'
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [
+      tipoValido,
+      idAnuncio,
+      parametrosValidos,
+      carregarItensDasCategorias,
+    ]
+  );
 
   useEffect(() => {
     carregarCategorias();
@@ -180,7 +204,9 @@ export default function GerenciarCatalogo() {
 
         const { data, error } = await supabase
           .from(tabela)
-          .select(`${campoNome}, foto, id_usuario`)
+          .select(
+            `${campoNome}, foto, id_usuario`
+          )
           .eq('id', idAnuncio)
           .single();
 
@@ -240,7 +266,11 @@ export default function GerenciarCatalogo() {
     }
 
     carregarAnuncioEProprietario();
-  }, [tipoValido, idAnuncio, parametrosValidos]);
+  }, [
+    tipoValido,
+    idAnuncio,
+    parametrosValidos,
+  ]);
 
   const handleCriarCategoria = async (
     nome: string
@@ -256,13 +286,14 @@ export default function GerenciarCatalogo() {
     try {
       setErro(null);
 
-      const novaCategoria = await criarCategoria({
-        tipo_anuncio: tipoValido,
-        anuncio_id: idAnuncio,
-        nome,
-        ordem: categorias.length,
-        ativo: true,
-      });
+      const novaCategoria =
+        await criarCategoria({
+          tipo_anuncio: tipoValido,
+          anuncio_id: idAnuncio,
+          nome,
+          ordem: categorias.length,
+          ativo: true,
+        });
 
       setCategorias((anteriores) => [
         ...anteriores,
@@ -309,18 +340,29 @@ export default function GerenciarCatalogo() {
 
       setCategorias((anteriores) =>
         anteriores.filter(
-          (item) => item.id !== categoria.id
+          (item) =>
+            item.id !== categoria.id
         )
       );
 
-      setItensPorCategoria((anteriores) => {
-        const novoMapa = { ...anteriores };
-        delete novoMapa[categoria.id];
-        return novoMapa;
-      });
+      setItensPorCategoria(
+        (anteriores) => {
+          const novoMapa = {
+            ...anteriores,
+          };
 
-      if (categoriaComFormulario === categoria.id) {
+          delete novoMapa[categoria.id];
+
+          return novoMapa;
+        }
+      );
+
+      if (
+        categoriaComFormulario ===
+        categoria.id
+      ) {
         setCategoriaComFormulario(null);
+        setItemEmEdicao(null);
       }
     } catch (error) {
       console.error(
@@ -340,6 +382,7 @@ export default function GerenciarCatalogo() {
       nome: string;
       descricao: string | null;
       preco: number;
+      foto: string | null;
     }
   ) => {
     if (!ehProprietario) {
@@ -350,32 +393,42 @@ export default function GerenciarCatalogo() {
       setErro(null);
 
       const itensAtuais =
-        itensPorCategoria[categoria.id] || [];
+        itensPorCategoria[categoria.id] ||
+        [];
 
       const novoItem = await criarItem({
         categoria_id: categoria.id,
         nome: dados.nome,
         descricao: dados.descricao,
         preco: dados.preco,
-        foto: null,
+        foto: dados.foto,
         ordem: itensAtuais.length,
         ativo: true,
       });
 
-      setItensPorCategoria((anteriores) => ({
-        ...anteriores,
-        [categoria.id]: [
-          ...(anteriores[categoria.id] || []),
-          novoItem,
-        ],
-      }));
+      setItensPorCategoria(
+        (anteriores) => ({
+          ...anteriores,
+
+          [categoria.id]: [
+            ...(anteriores[
+              categoria.id
+            ] || []),
+
+            novoItem,
+          ],
+        })
+      );
 
       setCategoriaComFormulario(null);
+      setItemEmEdicao(null);
 
-      setCategoriasAbertas((anteriores) => ({
-        ...anteriores,
-        [categoria.id]: true,
-      }));
+      setCategoriasAbertas(
+        (anteriores) => ({
+          ...anteriores,
+          [categoria.id]: true,
+        })
+      );
     } catch (error) {
       console.error(
         'Erro ao criar item:',
@@ -384,6 +437,62 @@ export default function GerenciarCatalogo() {
 
       setErro(
         'Não foi possível cadastrar o item.'
+      );
+
+      throw error;
+    }
+  };
+
+  const handleAtualizarItem = async (
+    categoriaId: number,
+    itemId: number,
+    dados: {
+      nome: string;
+      descricao: string | null;
+      preco: number;
+      foto: string | null;
+    }
+  ) => {
+    if (!ehProprietario) {
+      return;
+    }
+
+    try {
+      setErro(null);
+
+      const itemAtualizado =
+        await atualizarItem(itemId, {
+          nome: dados.nome,
+          descricao: dados.descricao,
+          preco: dados.preco,
+          foto: dados.foto,
+        });
+
+      setItensPorCategoria(
+        (anteriores) => ({
+          ...anteriores,
+
+          [categoriaId]: (
+            anteriores[categoriaId] ||
+            []
+          ).map((item) =>
+            item.id === itemId
+              ? itemAtualizado
+              : item
+          ),
+        })
+      );
+
+      setItemEmEdicao(null);
+      setCategoriaComFormulario(null);
+    } catch (error) {
+      console.error(
+        'Erro ao atualizar item:',
+        error
+      );
+
+      setErro(
+        'Não foi possível atualizar o item.'
       );
 
       throw error;
@@ -411,14 +520,24 @@ export default function GerenciarCatalogo() {
 
       await excluirItem(item.id);
 
-      setItensPorCategoria((anteriores) => ({
-        ...anteriores,
-        [categoriaId]: (
-          anteriores[categoriaId] || []
-        ).filter(
-          (itemAtual) => itemAtual.id !== item.id
-        ),
-      }));
+      setItensPorCategoria(
+        (anteriores) => ({
+          ...anteriores,
+
+          [categoriaId]: (
+            anteriores[categoriaId] ||
+            []
+          ).filter(
+            (itemAtual) =>
+              itemAtual.id !== item.id
+          ),
+        })
+      );
+
+      if (itemEmEdicao?.id === item.id) {
+        setItemEmEdicao(null);
+        setCategoriaComFormulario(null);
+      }
     } catch (error) {
       console.error(
         'Erro ao excluir item:',
@@ -434,22 +553,49 @@ export default function GerenciarCatalogo() {
   const alternarCategoria = (
     categoriaId: number
   ) => {
-    setCategoriasAbertas((anteriores) => ({
-      ...anteriores,
-      [categoriaId]:
-        !anteriores[categoriaId],
-    }));
+    setCategoriasAbertas(
+      (anteriores) => ({
+        ...anteriores,
+
+        [categoriaId]:
+          !anteriores[categoriaId],
+      })
+    );
   };
 
   const abrirFormularioItem = (
     categoriaId: number
   ) => {
-    setCategoriaComFormulario(categoriaId);
+    setItemEmEdicao(null);
 
-    setCategoriasAbertas((anteriores) => ({
-      ...anteriores,
-      [categoriaId]: true,
-    }));
+    setCategoriaComFormulario(
+      categoriaId
+    );
+
+    setCategoriasAbertas(
+      (anteriores) => ({
+        ...anteriores,
+        [categoriaId]: true,
+      })
+    );
+  };
+
+  const abrirEdicaoItem = (
+    categoriaId: number,
+    item: ItemAnuncio
+  ) => {
+    setItemEmEdicao(item);
+
+    setCategoriaComFormulario(
+      categoriaId
+    );
+
+    setCategoriasAbertas(
+      (anteriores) => ({
+        ...anteriores,
+        [categoriaId]: true,
+      })
+    );
   };
 
   if (!parametrosValidos) {
@@ -505,7 +651,8 @@ export default function GerenciarCatalogo() {
 
               <div>
                 <p className="text-xs uppercase tracking-wide text-purple-600 font-semibold">
-                  {tipoValido === 'comida'
+                  {tipoValido ===
+                  'comida'
                     ? 'Cardápio de comida'
                     : 'Catálogo de produtos'}
                 </p>
@@ -536,11 +683,19 @@ export default function GerenciarCatalogo() {
           <>
             {ehProprietario && (
               <CategoriaForm
-                onSalvar={handleCriarCategoria}
+                onSalvar={
+                  handleCriarCategoria
+                }
               />
             )}
 
-            <div className={ehProprietario ? 'mt-8' : ''}>
+            <div
+              className={
+                ehProprietario
+                  ? 'mt-8'
+                  : ''
+              }
+            >
               <h2 className="text-xl font-semibold text-gray-800 mb-4">
                 Categorias
               </h2>
@@ -549,196 +704,315 @@ export default function GerenciarCatalogo() {
                 <div className="bg-white rounded-xl shadow p-6 text-gray-500">
                   Carregando categorias...
                 </div>
-              ) : categorias.length === 0 ? (
+              ) : categorias.length ===
+                0 ? (
                 <div className="bg-white rounded-xl shadow p-8 text-center">
                   <p className="text-gray-600">
-                    Nenhuma categoria cadastrada.
+                    Nenhuma categoria
+                    cadastrada.
                   </p>
 
                   {ehProprietario && (
                     <p className="text-sm text-gray-500 mt-2">
-                      Crie a primeira categoria acima.
+                      Crie a primeira
+                      categoria acima.
                     </p>
                   )}
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {categorias.map((categoria) => {
-                    const itens =
-                      itensPorCategoria[categoria.id] || [];
+                  {categorias.map(
+                    (categoria) => {
+                      const itens =
+                        itensPorCategoria[
+                          categoria.id
+                        ] || [];
 
-                    const aberta =
-                      categoriasAbertas[categoria.id] ??
-                      true;
+                      const aberta =
+                        categoriasAbertas[
+                          categoria.id
+                        ] ?? true;
 
-                    return (
-                      <div
-                        key={categoria.id}
-                        className="bg-white rounded-xl shadow overflow-hidden"
-                      >
-                        <div className="p-5 flex items-center justify-between gap-4">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              alternarCategoria(
-                                categoria.id
-                              )
-                            }
-                            className="flex-1 flex items-center gap-3 text-left"
-                          >
-                            {aberta ? (
-                              <ChevronUp
-                                size={20}
-                                className="text-gray-500"
-                              />
-                            ) : (
-                              <ChevronDown
-                                size={20}
-                                className="text-gray-500"
-                              />
-                            )}
-
-                            <div>
-                              <h3 className="font-semibold text-gray-800">
-                                {categoria.nome}
-                              </h3>
-
-                              <p className="text-sm text-gray-500 mt-1">
-                                {itens.length === 0
-                                  ? 'Nenhum item'
-                                  : `${itens.length} ${
-                                      itens.length === 1
-                                        ? 'item'
-                                        : 'itens'
-                                    }`}
-                              </p>
-
-                              {!categoria.ativo && (
-                                <span className="text-xs text-gray-500">
-                                  Inativa
-                                </span>
+                      return (
+                        <div
+                          key={
+                            categoria.id
+                          }
+                          className="bg-white rounded-xl shadow overflow-hidden"
+                        >
+                          <div className="p-5 flex items-center justify-between gap-4">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                alternarCategoria(
+                                  categoria.id
+                                )
+                              }
+                              className="flex-1 flex items-center gap-3 text-left"
+                            >
+                              {aberta ? (
+                                <ChevronUp
+                                  size={
+                                    20
+                                  }
+                                  className="text-gray-500"
+                                />
+                              ) : (
+                                <ChevronDown
+                                  size={
+                                    20
+                                  }
+                                  className="text-gray-500"
+                                />
                               )}
-                            </div>
-                          </button>
 
-                          {ehProprietario && (
-                            <div className="flex items-center gap-2">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  abrirFormularioItem(
-                                    categoria.id
-                                  )
-                                }
-                                className="flex items-center gap-2 px-3 py-2 text-sm bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-lg"
-                                title="Adicionar item"
-                              >
-                                <Plus size={17} />
-                                <span className="hidden sm:inline">
-                                  Adicionar item
-                                </span>
-                              </button>
+                              <div>
+                                <h3 className="font-semibold text-gray-800">
+                                  {
+                                    categoria.nome
+                                  }
+                                </h3>
 
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  handleExcluirCategoria(
-                                    categoria
-                                  )
-                                }
-                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-                                title="Excluir categoria"
-                              >
-                                <Trash2 size={19} />
-                              </button>
+                                <p className="text-sm text-gray-500 mt-1">
+                                  {itens.length ===
+                                  0
+                                    ? 'Nenhum item'
+                                    : `${
+                                        itens.length
+                                      } ${
+                                        itens.length ===
+                                        1
+                                          ? 'item'
+                                          : 'itens'
+                                      }`}
+                                </p>
+
+                                {!categoria.ativo && (
+                                  <span className="text-xs text-gray-500">
+                                    Inativa
+                                  </span>
+                                )}
+                              </div>
+                            </button>
+
+                            {ehProprietario && (
+                              <div className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    abrirFormularioItem(
+                                      categoria.id
+                                    )
+                                  }
+                                  className="flex items-center gap-2 px-3 py-2 text-sm bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-lg"
+                                  title="Adicionar item"
+                                >
+                                  <Plus
+                                    size={
+                                      17
+                                    }
+                                  />
+
+                                  <span className="hidden sm:inline">
+                                    Adicionar
+                                    item
+                                  </span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleExcluirCategoria(
+                                      categoria
+                                    )
+                                  }
+                                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                  title="Excluir categoria"
+                                >
+                                  <Trash2
+                                    size={
+                                      19
+                                    }
+                                  />
+                                </button>
+                              </div>
+                            )}
+                          </div>
+
+                          {aberta && (
+                            <div className="border-t border-gray-100 px-5 pb-5">
+                              {ehProprietario &&
+                                categoriaComFormulario ===
+                                  categoria.id && (
+                                  <div className="pt-5">
+                                    <ItemForm
+                                      categoriaNome={
+                                        categoria.nome
+                                      }
+                                      itemInicial={
+                                        itemEmEdicao
+                                          ? {
+                                              nome: itemEmEdicao.nome,
+                                              descricao:
+                                                itemEmEdicao.descricao,
+                                              preco:
+                                                Number(
+                                                  itemEmEdicao.preco
+                                                ),
+                                              foto: itemEmEdicao.foto,
+                                            }
+                                          : null
+                                      }
+                                      onSalvar={(
+                                        dados
+                                      ) => {
+                                        if (
+                                          itemEmEdicao
+                                        ) {
+                                          return handleAtualizarItem(
+                                            categoria.id,
+                                            itemEmEdicao.id,
+                                            dados
+                                          );
+                                        }
+
+                                        return handleCriarItem(
+                                          categoria,
+                                          dados
+                                        );
+                                      }}
+                                      onCancelar={() => {
+                                        setItemEmEdicao(
+                                          null
+                                        );
+
+                                        setCategoriaComFormulario(
+                                          null
+                                        );
+                                      }}
+                                    />
+                                  </div>
+                                )}
+
+                              {itens.length ===
+                              0 ? (
+                                <p className="text-sm text-gray-500 py-5">
+                                  Nenhum item
+                                  cadastrado
+                                  nesta
+                                  categoria.
+                                </p>
+                              ) : (
+                                <div className="divide-y divide-gray-100">
+                                  {itens.map(
+                                    (
+                                      item
+                                    ) => (
+                                      <div
+                                        key={
+                                          item.id
+                                        }
+                                        className="py-4 flex items-start justify-between gap-4"
+                                      >
+                                        <div className="flex items-start gap-4">
+                                          {item.foto && (
+                                            <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                                              <PrivateImage
+                                                path={
+                                                  item.foto
+                                                }
+                                                alt={
+                                                  item.nome
+                                                }
+                                                className="w-full h-full object-cover"
+                                              />
+                                            </div>
+                                          )}
+
+                                          <div>
+                                            <h4 className="font-medium text-gray-800">
+                                              {
+                                                item.nome
+                                              }
+                                            </h4>
+
+                                            {item.descricao && (
+                                              <p className="text-sm text-gray-500 mt-1">
+                                                {
+                                                  item.descricao
+                                                }
+                                              </p>
+                                            )}
+
+                                            <p className="font-semibold text-purple-700 mt-2">
+                                              {formatarPreco(
+                                                item.preco
+                                              )}
+                                            </p>
+
+                                            {!item.ativo && (
+                                              <span className="text-xs text-gray-500">
+                                                Item
+                                                inativo
+                                              </span>
+                                            )}
+                                          </div>
+                                        </div>
+
+                                        {ehProprietario && (
+                                          <div className="flex items-center gap-1">
+                                            <button
+                                              type="button"
+                                              onClick={() =>
+                                                abrirEdicaoItem(
+                                                  categoria.id,
+                                                  item
+                                                )
+                                              }
+                                              className="flex items-center gap-2 px-3 py-2 text-sm text-purple-700 hover:bg-purple-50 rounded-lg"
+                                              title="Editar item"
+                                            >
+                                              <Pencil
+                                                size={
+                                                  17
+                                                }
+                                              />
+
+                                              <span className="hidden sm:inline">
+                                                Editar
+                                              </span>
+                                            </button>
+
+                                            <button
+                                              type="button"
+                                              onClick={() =>
+                                                handleExcluirItem(
+                                                  categoria.id,
+                                                  item
+                                                )
+                                              }
+                                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                              title="Excluir item"
+                                            >
+                                              <Trash2
+                                                size={
+                                                  18
+                                                }
+                                              />
+                                            </button>
+                                          </div>
+                                        )}
+                                      </div>
+                                    )
+                                  )}
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
-
-                        {aberta && (
-                          <div className="border-t border-gray-100 px-5 pb-5">
-                            {itens.length === 0 ? (
-                              <p className="text-sm text-gray-500 py-5">
-                                Nenhum item cadastrado nesta categoria.
-                              </p>
-                            ) : (
-                              <div className="divide-y divide-gray-100">
-                                {itens.map((item) => (
-                                  <div
-                                    key={item.id}
-                                    className="py-4 flex items-start justify-between gap-4"
-                                  >
-                                    <div>
-                                      <h4 className="font-medium text-gray-800">
-                                        {item.nome}
-                                      </h4>
-
-                                      {item.descricao && (
-                                        <p className="text-sm text-gray-500 mt-1">
-                                          {item.descricao}
-                                        </p>
-                                      )}
-
-                                      <p className="font-semibold text-purple-700 mt-2">
-                                        {formatarPreco(
-                                          item.preco
-                                        )}
-                                      </p>
-
-                                      {!item.ativo && (
-                                        <span className="text-xs text-gray-500">
-                                          Item inativo
-                                        </span>
-                                      )}
-                                    </div>
-
-                                    {ehProprietario && (
-                                      <button
-                                        type="button"
-                                        onClick={() =>
-                                          handleExcluirItem(
-                                            categoria.id,
-                                            item
-                                          )
-                                        }
-                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-                                        title="Excluir item"
-                                      >
-                                        <Trash2
-                                          size={18}
-                                        />
-                                      </button>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-
-                            {ehProprietario &&
-                              categoriaComFormulario ===
-                                categoria.id && (
-                                <ItemForm
-                                  categoriaNome={
-                                    categoria.nome
-                                  }
-                                  onSalvar={(dados) =>
-                                    handleCriarItem(
-                                      categoria,
-                                      dados
-                                    )
-                                  }
-                                  onCancelar={() =>
-                                    setCategoriaComFormulario(
-                                      null
-                                    )
-                                  }
-                                />
-                              )}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                      );
+                    }
+                  )}
                 </div>
               )}
             </div>

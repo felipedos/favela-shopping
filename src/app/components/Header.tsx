@@ -171,7 +171,7 @@ export default function Header({
                       {user && (
                         <>
                           <Link
-                            to="/produtos-contratados"
+                            to="/editar-produto"
                             onClick={fecharMenus}
                             className="block px-4 py-3 hover:bg-purple-50"
                           >
@@ -219,7 +219,7 @@ export default function Header({
                       {user && (
                         <>
                           <Link
-                            to="/comidas-contratadas"
+                            to="/editar-comida"
                             onClick={fecharMenus}
                             className="block px-4 py-3 hover:bg-purple-50"
                           >
@@ -493,7 +493,7 @@ export default function Header({
                   {user && (
                     <>
                       <Link
-                        to="/produtos-contratados"
+                        to="/editar-produto"
                         onClick={fecharMenus}
                         className="block py-2 text-gray-600 hover:text-blue-600"
                       >
@@ -531,7 +531,7 @@ export default function Header({
                   {user && (
                     <>
                       <Link
-                        to="/comidas-contratadas"
+                        to="/editar-comida"
                         onClick={fecharMenus}
                         className="block py-2 text-gray-600 hover:text-orange-600"
                       >

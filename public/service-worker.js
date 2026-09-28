@@ -1,4 +1,4 @@
-const CACHE_NAME = 'favela-shopping-v3.6';
+const CACHE_NAME = 'favela-shopping-v3.7';
 
 const STATIC_ASSETS = [
   '/',

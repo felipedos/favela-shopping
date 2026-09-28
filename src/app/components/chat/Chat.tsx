@@ -279,12 +279,14 @@ const carregarConversa =
     const idTemporario = -Date.now();
 
     const mensagemTemporaria: Mensagem = {
-        id: idTemporario,
-        conversa_id: conversa.id,
-        remetente_id: meuUserId,
-        texto: textoEnviar,
-        created_at: new Date().toISOString(),
-        lida: false,
+      id: idTemporario,
+      conversa_id: conversa.id,
+      remetente_id: meuUserId,
+      texto: textoEnviar,
+      created_at: new Date().toISOString(),
+      lida: false,
+      tipo_mensagem: 'texto',
+      arquivo_path: null,
     };
 
     // Mostra imediatamente na tela.

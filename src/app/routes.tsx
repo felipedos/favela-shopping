@@ -21,6 +21,10 @@ import AvaliarComida from './pages/AvaliarComida';
 import EditarPerfil from './pages/EditarPerfil';
 import Conversas from './pages/Conversas';
 import GerenciarCatalogo from './pages/GerenciarCatalogo';
+import EditarComida from './pages/EditarComida';
+import MinhasComidas from './pages/MinhasComidas';
+import EditarProduto from './pages/EditarProduto';
+import MeusProdutos from './pages/MeusProdutos';
 
 export const router = createBrowserRouter([
   {
@@ -49,6 +53,11 @@ export const router = createBrowserRouter([
       { path: 'avaliar-comida/:id', Component: AvaliarComida },
       { path: 'conversas', Component: Conversas },
       { path: 'catalogo/:tipoAnuncio/:anuncioId', Component: GerenciarCatalogo },
+      { path: 'editar-comida/:id', Component: EditarComida },
+      { path: 'editar-comida', Component: MinhasComidas },
+      { path: 'editar-produto/:id', Component: EditarProduto },
+      { path: 'editar-produto', Component: MeusProdutos },
+      { path: 'editar-produto/:id', Component: EditarProduto },
     ],
   },
 ]);
