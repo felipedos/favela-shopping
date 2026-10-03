@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router';
 import { ArrowLeft, Package } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import Header from '../components/Header';
+import Cabecalho from '../components/Cabecalho';
 import StarRating from '../components/StarRating';
 
 interface AvaliacaoData {
@@ -88,7 +88,7 @@ export default function AvaliarProduto() {
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-sky-100">
-        <Header />
+        <Cabecalho />
         <div className="max-w-4xl mx-auto px-4 py-8 text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Faça login para avaliar</h2>
         </div>
@@ -99,7 +99,7 @@ export default function AvaliarProduto() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-sky-100">
-        <Header />
+        <Cabecalho />
         <div className="flex items-center justify-center h-96">
           <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
         </div>
@@ -110,7 +110,7 @@ export default function AvaliarProduto() {
   if (!avaliacao) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-sky-100">
-        <Header />
+        <Cabecalho />
         <div className="max-w-4xl mx-auto px-4 py-8 text-center">
           <h2 className="text-2xl font-bold text-gray-800">Avaliação não encontrada</h2>
         </div>
@@ -124,7 +124,7 @@ export default function AvaliarProduto() {
   if (jaAvaliado) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-sky-100">
-        <Header />
+        <Cabecalho />
         <div className="max-w-4xl mx-auto px-4 py-8 text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Você já avaliou este produto</h2>
           <button
@@ -140,7 +140,7 @@ export default function AvaliarProduto() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-sky-100">
-      <Header />
+      <Cabecalho />
 
       <main className="max-w-3xl mx-auto px-4 py-8">
         <button

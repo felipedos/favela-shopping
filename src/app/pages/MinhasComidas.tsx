@@ -11,7 +11,7 @@ import {
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
-import Header from '../components/Header';
+import Cabecalho from '../components/Cabecalho';
 import PrivateImage from '../components/PrivateImage';
 
 interface Comida {
@@ -111,7 +111,7 @@ export default function MinhasComidas() {
   if (authLoading || carregando) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100">
-        <Header showFullMenu />
+        <Cabecalho showFullMenu />
 
         <main className="max-w-6xl mx-auto px-4 py-8">
           <div className="bg-white rounded-xl shadow-lg p-8 text-gray-600">
@@ -124,7 +124,7 @@ export default function MinhasComidas() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100">
-      <Header showFullMenu />
+      <Cabecalho showFullMenu />
 
       <main className="max-w-6xl mx-auto px-4 py-8">
         <button

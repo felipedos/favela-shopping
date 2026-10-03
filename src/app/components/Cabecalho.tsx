@@ -15,7 +15,7 @@ import {
 
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
-import { ANUNCIOS_DEMONSTRATIVOS } from '../../mocks/databaseMock';
+import { ANUNCIOS_DEMONSTRATIVOS } from '../../mocks/dadosAnunciosDemonstrativos';
 
 import SobreModal from './SobreModal';
 import ContatoModal from './ContatoModal';
@@ -25,7 +25,7 @@ interface PropriedadesCabecalho {
   showFullMenu?: boolean;
 }
 
-const communityOptions = [
+const opcoesComunidade = [
   ...new Set(
     ANUNCIOS_DEMONSTRATIVOS.map((advertisement) => advertisement.metadata.location)
       .filter((location): location is string => Boolean(location)),
@@ -58,7 +58,7 @@ export default function Cabecalho({
   const [deliveryLocation, setDeliveryLocation] = useState('Sua Comunidade');
   const [locationMenuOpen, setLocationMenuOpen] = useState(false);
 
-  const handleSair = async () => {
+  const sair = async () => {
     setMenuMobileAberto(false);
 
     await signOut();
@@ -70,7 +70,7 @@ export default function Cabecalho({
     setMenuMobileAberto(false);
   };
 
-  const handleBuscar = async (event: FormEvent<HTMLFormElement>) => {
+  const buscarAnuncios = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const term = searchTerm.trim();
     if (!term || searching) return;
@@ -142,7 +142,7 @@ export default function Cabecalho({
             {locationMenuOpen && (
               <div className="absolute left-0 top-full z-50 mt-2 w-56 rounded-xl border border-border bg-surface p-2 shadow-hover">
                 <p className="px-3 py-2 text-xs font-bold uppercase text-text-muted">Escolha a comunidade</p>
-                {['Sua Comunidade', ...communityOptions].map((location) => (
+                {['Sua Comunidade', ...opcoesComunidade].map((location) => (
                   <button
                     key={location}
                     type="button"
@@ -159,7 +159,7 @@ export default function Cabecalho({
             )}
           </div>
 
-          <form onSubmit={handleBuscar} className="relative flex min-w-12 max-w-md flex-1 items-center rounded-full border border-border/40 bg-background px-2 py-2 transition-all duration-300 ease-out focus-within:border-primary sm:min-w-0 sm:px-4">
+          <form onSubmit={buscarAnuncios} className="relative flex min-w-12 max-w-md flex-1 items-center rounded-full border border-border/40 bg-background px-2 py-2 transition-all duration-300 ease-out focus-within:border-primary sm:min-w-0 sm:px-4">
             <Search size={18} className="hidden shrink-0 text-text-muted sm:block" />
             <input
               type="search"
@@ -191,7 +191,7 @@ export default function Cabecalho({
               </Link>
             )}
             {user ? (
-              <button type="button" onClick={handleSair} className="hidden items-center gap-2 rounded-button bg-background px-3 py-2 text-sm font-semibold text-text-main transition-all duration-300 ease-out hover:bg-border xl:flex">
+              <button type="button" onClick={sair} className="hidden items-center gap-2 rounded-button bg-background px-3 py-2 text-sm font-semibold text-text-main transition-all duration-300 ease-out hover:bg-border xl:flex">
                 <LogOut size={16} /> Sair
               </button>
             ) : (
@@ -475,7 +475,7 @@ export default function Cabecalho({
             {user ? (
               <button
                 type="button"
-                onClick={handleSair}
+                onClick={sair}
                 className="w-full flex items-center justify-center gap-2 bg-red-50 text-red-600 py-3 rounded-lg font-semibold"
               >
                 <LogOut size={19} />

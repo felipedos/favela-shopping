@@ -10,15 +10,15 @@ import {
   Utensils,
   Wrench,
 } from "lucide-react";
-import Cabecalho from "../components/Header";
-import Rodape from "../components/Footer";
+import Cabecalho from "../components/Cabecalho";
+import Rodape from "../components/Rodape";
 import {
   ANUNCIOS_DEMONSTRATIVOS,
   ROTULOS_ACAO_ANUNCIO,
   CATEGORIAS,
   obterCaminhoDetalheAnuncio,
   type IdCategoria,
-} from "../../mocks/databaseMock";
+} from "../../mocks/dadosAnunciosDemonstrativos";
 
 const demoFoods = ANUNCIOS_DEMONSTRATIVOS.filter((advertisement) => advertisement.categoryId === "alimentacao");
 const demoProducts = ANUNCIOS_DEMONSTRATIVOS.filter((advertisement) => advertisement.categoryId === "produtos");

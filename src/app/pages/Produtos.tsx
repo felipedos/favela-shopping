@@ -6,8 +6,11 @@ import { Produto, CATEGORIAS_PRODUTO } from '../../types';
 import { Search, Filter, Package } from 'lucide-react';
 import SobreModal from '../components/SobreModal';
 import ContatoModal from '../components/ContatoModal';
-import Header from '../components/Header';
+import Cabecalho from '../components/Cabecalho';
 import PrivateImage from '../components/PrivateImage';
+import Rodape from '../components/Rodape';
+import GradeAnunciosDemonstrativos from '../components/GradeAnunciosDemonstrativos';
+import { ROTULOS_ACAO_ANUNCIO } from '../../mocks/dadosAnunciosDemonstrativos';
 
 export default function Produtos() {
   const { signOut } = useAuth();
@@ -165,33 +168,34 @@ export default function Produtos() {
     }
   };
 
-  const handleLogout = async () => {
+  const sair = async () => {
     await signOut();
     navigate('/');
   };
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50">
-        <Header showFullMenu={true} />
+      <div className="marketplace-page min-h-screen bg-background">
+        <Cabecalho showFullMenu={true} />
 
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto w-full max-w-7xl px-4 py-8 md:px-6 lg:px-8">
 
-          {/* 🔥 HEADER AZUL */}
-          <div className="bg-gradient-to-r from-blue-600 to-sky-600 rounded-2xl p-8 mb-8 text-white shadow-lg">
+          <div className="marketplace-hero marketplace-hero--products rounded-2xl p-6 sm:p-8 mb-8 text-text-main shadow-premium">
             <div className="flex items-center gap-3 mb-3">
               <Package className="w-10 h-10" />
               <h1 className="text-4xl font-bold">Produtos</h1>
             </div>
-            <p className="text-blue-100 text-lg">
+            <p className="text-text-muted text-lg">
               Encontre produtos de qualidade na sua comunidade
             </p>
           </div>
 
+          <GradeAnunciosDemonstrativos categoryId="produtos" />
+
           {/* FILTROS */}
-          <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <div className="marketplace-filters bg-white rounded-xl shadow-sm ring-1 ring-slate-200 p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
-              <Filter size={20} className="text-blue-600" />
+              <Filter size={20} className="text-primary" />
               <h2 className="text-lg font-semibold">Filtros</h2>
             </div>
 
@@ -208,7 +212,7 @@ export default function Produtos() {
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border rounded-lg"
+                    className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
                     placeholder="Nome do produto..."
                   />
                 </div>
@@ -223,7 +227,7 @@ export default function Produtos() {
                   type="text"
                   value={bairroFilter}
                   onChange={(e) => setBairroFilter(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
                   placeholder="Filtrar por bairro..."
                 />
               </div>
@@ -236,7 +240,7 @@ export default function Produtos() {
                 <select
                   value={categoriaFilter}
                   onChange={(e) => setCategoriaFilter(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
                 >
                   <option value="">Todas</option>
                   {categorias.map((cat) => (
@@ -260,59 +264,52 @@ export default function Produtos() {
               <p className="text-gray-500">Nenhum produto encontrado</p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="marketplace-grid marketplace-grid--catalog grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {produtos.map((produto) => (
-                <div
+                <Link
                   key={produto.id}
-                  className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition"
+                  to={`/produtos/${produto.id}`}
+                  className="marketplace-card mock-ad-card mock-ad-card--catalog group cursor-pointer transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-hover active:scale-[0.98] active:duration-100"
                 >
-                  {produto.foto &&
-                    fotoUrls[produto.foto] && (
+                  <div className="mock-ad-card__media">
+                    {produto.foto && fotoUrls[produto.foto] && (
                       <img
                         src={fotoUrls[produto.foto]}
                         alt={produto.nomeProduto || ''}
-                        className="w-full h-48 object-cover"
+                        className="aspect-[4/3] w-full object-cover"
                         loading="lazy"
                         decoding="async"
                       />
                     )}
-
-                  <div className="p-4">
-                    <h3 className="text-lg font-bold mb-2">
-                      {produto.nomeProduto}
-                    </h3>
-
-                    <p className="text-gray-600 text-sm mb-1">
-                      <strong>Vendedor:</strong> {produto.nome}
-                    </p>
-
-                    <p className="text-gray-600 text-sm mb-1">
-                      <strong>Bairro:</strong> {produto.bairro}
-                    </p>
-
-                    <p className="text-gray-600 text-sm mb-4">
-                      <strong>Categoria:</strong> {produto.categoria}
-                    </p>
-
-                    <Link
-                      to={`/produtos/${produto.id}`}
-                      className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-                    >
-                      Ver produto
-                    </Link>
-
-                    {produto.valor && (
-                      <p className="text-green-600 font-bold mt-2 text-center">
-                        R$ {Number(produto.valor).toFixed(2)}
-                      </p>
-                    )}
                   </div>
-                </div>
+
+                  <div className="mock-ad-card__body">
+                    <div className="mock-ad-card__details">
+                      <h3 className="line-clamp-2 min-h-12 font-bold text-text-main">
+                        {produto.nomeProduto}
+                      </h3>
+                      {produto.valor !== null && produto.valor !== undefined && (
+                        <strong>R$ {Number(produto.valor).toFixed(2)}</strong>
+                      )}
+                    </div>
+                    <div className="mock-ad-card__metadata">
+                      {produto.nome && <span><strong>Vendedor:</strong> {produto.nome}</span>}
+                      {produto.bairro && <span><strong>Bairro:</strong> {produto.bairro}</span>}
+                      {produto.categoria && <span><strong>Categoria:</strong> {produto.categoria}</span>}
+                    </div>
+                    {produto.categoria && <div className="mock-ad-card__tags"><span>{produto.categoria}</span></div>}
+                    <span className="mock-ad-card__action">
+                      {ROTULOS_ACAO_ANUNCIO.produtos}
+                    </span>
+
+                  </div>
+                </Link>
               ))}
             </div>
           )}
         </div>
       </div>
+      <Rodape />
 
       <SobreModal open={showSobre} onClose={() => setShowSobre(false)} />
       <ContatoModal open={showContato} onClose={() => setShowContato(false)} />

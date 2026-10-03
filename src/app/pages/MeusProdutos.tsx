@@ -11,7 +11,7 @@ import {
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
-import Header from '../components/Header';
+import Cabecalho from '../components/Cabecalho';
 import PrivateImage from '../components/PrivateImage';
 
 interface Produto {
@@ -114,7 +114,7 @@ export default function MeusProdutos() {
   if (authLoading || carregando) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-sky-100">
-        <Header showFullMenu />
+        <Cabecalho showFullMenu />
 
         <main className="max-w-6xl mx-auto px-4 py-8">
           <div className="bg-white rounded-xl shadow-lg p-8 text-gray-600">
@@ -127,7 +127,7 @@ export default function MeusProdutos() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-sky-100">
-      <Header showFullMenu />
+      <Cabecalho showFullMenu />
 
       <main className="max-w-6xl mx-auto px-4 py-8">
         <button

@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { Package, Star } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import Header from '../components/Header';
+import Cabecalho from '../components/Cabecalho';
 
 interface ProdutoContratado {
   id: string;
@@ -59,7 +59,7 @@ export default function ProdutosContratados() {
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-sky-100">
-        <Header />
+        <Cabecalho />
         <div className="max-w-4xl mx-auto px-4 py-8 text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Faça login para ver seus produtos</h2>
           <Link to="/login-cadastro" className="text-blue-600 hover:underline">
@@ -72,7 +72,7 @@ export default function ProdutosContratados() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-sky-100">
-      <Header />
+      <Cabecalho />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="bg-gradient-to-r from-blue-600 to-sky-600 rounded-2xl p-8 mb-8 text-white shadow-lg">

@@ -4,7 +4,7 @@ import { Package, ArrowLeft } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { CATEGORIAS_PRODUTO } from '../../types';
-import Header from '../components/Header';
+import Cabecalho from '../components/Cabecalho';
 import ImageUpload from '../components/ImageUpload';
 
 export default function CadastrarProduto() {
@@ -67,7 +67,7 @@ export default function CadastrarProduto() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-sky-100">
-      <Header />
+      <Cabecalho />
 
       <main className="max-w-3xl mx-auto px-4 py-8">
         <button

@@ -1,25 +1,35 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router';
-import { ArrowLeft, MessageCircle, MapPin, UtensilsCrossed, Tag, DollarSign } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Food } from '../../types';
-import Header from '../components/Header';
+import Cabecalho from '../components/Cabecalho';
 import Chat from '../components/chat/Chat';
 import PrivateImage from '../components/PrivateImage';
+import DetalheAnuncioDemonstrativo from '../components/DetalheAnuncioDemonstrativo';
+import LayoutDetalheAnuncio, { type DadosDetalheAnuncio } from '../components/LayoutDetalheAnuncio';
+import { ANUNCIOS_DEMONSTRATIVOS } from '../../mocks/dadosAnunciosDemonstrativos';
 
 export default function DetalhesComida() {
   const { id } = useParams();
   const { user } = useAuth();
+  const mockComida = ANUNCIOS_DEMONSTRATIVOS.find(
+    (advertisement) => advertisement.categoryId === 'alimentacao' && advertisement.detailId === id,
+  );
   const [comida, setComida] = useState<Food | null>(null);
   const [loading, setLoading] = useState(true);
   const [chatAberto, setChatAberto] = useState(false);
 
   useEffect(() => {
-    if (id) {
+    if (mockComida) {
+      setComida(null);
+      setLoading(false);
+    } else if (id) {
+      setComida(null);
+      setLoading(true);
       fetchComida();
     }
-  }, [id]);
+  }, [id, mockComida]);
 
   async function fetchComida() {
     try {
@@ -38,7 +48,7 @@ export default function DetalhesComida() {
     }
   }
 
-  function handleAbrirChat() {
+  function abrirChat() {
     if (!user) {
       return;
     }
@@ -46,12 +56,21 @@ export default function DetalhesComida() {
     setChatAberto(true);
   }
 
+  if (mockComida) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Cabecalho />
+        <DetalheAnuncioDemonstrativo advertisement={mockComida} />
+      </div>
+    );
+  }
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100">
-        <Header />
+      <div className="min-h-screen bg-background">
+        <Cabecalho />
         <div className="flex items-center justify-center h-96">
-          <div className="w-12 h-12 border-4 border-orange-600 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
         </div>
       </div>
     );
@@ -59,11 +78,11 @@ export default function DetalhesComida() {
 
   if (!comida) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100">
-        <Header />
+      <div className="min-h-screen bg-background">
+        <Cabecalho />
         <div className="max-w-4xl mx-auto px-4 py-8 text-center">
           <h2 className="text-2xl font-bold text-gray-800">Comida não encontrada</h2>
-          <Link to="/comidas" className="text-orange-600 hover:underline mt-4 inline-block">
+          <Link to="/comidas" className="text-primary hover:underline mt-4 inline-block">
             Voltar para Comidas
           </Link>
         </div>
@@ -71,122 +90,35 @@ export default function DetalhesComida() {
     );
   }
 
+  const detailItem: DadosDetalheAnuncio = {
+    categoryId: 'alimentacao',
+    detailId: comida.id,
+    title: comida.nomeFood || 'Comida',
+    description: comida.descricao,
+    price: comida.valor,
+    imageElement: comida.foto ? (
+      <PrivateImage path={comida.foto} alt={comida.nomeFood || ''} className="h-full w-full object-cover" />
+    ) : undefined,
+    sellerName: comida.nome,
+    location: comida.bairro,
+    subcategory: comida.categoria,
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100">
-      <Header />
-
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        <Link
-          to="/comidas"
-          className="inline-flex items-center gap-2 text-orange-600 hover:text-orange-800 mb-6 font-medium"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Voltar para Comidas
-        </Link>
-
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          {comida.foto && (
-            <div className="h-96 overflow-hidden">
-              <PrivateImage
-                path={comida.foto}
-                alt={comida.nomeFood}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-
-          <div className="p-8">
-            <div className="flex items-start justify-between mb-6">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-800 mb-2">{comida.nomeFood}</h1>
-                <div className="flex items-center gap-2 text-orange-600 font-semibold">
-                  <Tag className="w-5 h-5" />
-                  {comida.categoria}
-                </div>
-              </div>
-              {comida.valor && (
-                <div className="text-right">
-                  <p className="text-gray-600 text-sm mb-1">Valor</p>
-                  <p className="text-3xl font-bold text-green-600">
-                    R$ {Number(comida.valor).toFixed(2)}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {comida.descricao && (
-              <div className="mb-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                  <UtensilsCrossed className="w-5 h-5" />
-                  Descrição
-                </h2>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                  {comida.descricao}
-                </p>
-              </div>
-            )}
-
-            <div className="bg-orange-50 rounded-lg p-6 mb-6">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Informações do Vendedor</h2>
-              <div className="space-y-2">
-                <p className="text-gray-700">
-                  <span className="font-medium">Nome:</span> {comida.nome}
-                </p>
-                <p className="text-gray-700 flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  <span className="font-medium">Bairro:</span> {comida.bairro}
-                </p>
-                {comida.cep && (
-                  <p className="text-gray-700">
-                    <span className="font-medium">CEP:</span> {comida.cep}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {user ? (
-              <>
-                <button
-                  type="button"
-                  onClick={handleAbrirChat}
-                  className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
-                >
-                  <MessageCircle className="w-6 h-6" />
-                  Entrar em Contato
-                </button>
-
-                {chatAberto && comida && (
-                  <Chat
-                    prestadorId={comida.id_usuario}
-                    tipoAnuncio="comida"
-                    anuncioId={comida.id}
-                    nomeDestinatario={
-                      comida.nomeFood ||
-                      comida.nome ||
-                      'Vendedor'
-                    }
-                    abertoInicialmente={true}
-                    onFechar={() => setChatAberto(false)}
-                  />
-                )}
-              </>
-            ) : (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
-                <p className="text-yellow-800 mb-3">
-                  Faça login para entrar em contato com o vendedor
-                </p>
-
-                <Link
-                  to="/login-cadastro"
-                  className="inline-block bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition-colors"
-                >
-                  Fazer Login
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      </main>
+    <div className="min-h-screen bg-background">
+      <Cabecalho />
+      <LayoutDetalheAnuncio item={detailItem} onContact={abrirChat}>
+        {user && chatAberto && (
+          <Chat
+            prestadorId={comida.id_usuario}
+            tipoAnuncio="comida"
+            anuncioId={comida.id}
+            nomeDestinatario={comida.nomeFood || comida.nome || 'Vendedor'}
+            abertoInicialmente={true}
+            onFechar={() => setChatAberto(false)}
+          />
+        )}
+      </LayoutDetalheAnuncio>
     </div>
   );
 }

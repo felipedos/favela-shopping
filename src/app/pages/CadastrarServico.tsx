@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { CATEGORIAS_SERVICO } from '../../types';
-import Header from '../components/Header';
+import Cabecalho from '../components/Cabecalho';
 import ImageUpload from '../components/ImageUpload';
 import { ArrowLeft } from 'lucide-react';
 
@@ -29,7 +29,7 @@ export default function CadastrarServico() {
   if (!isProfileComplete()) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
+        <Cabecalho />
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6 text-center">
             <h2 className="text-2xl font-bold mb-4 text-red-600">Cadastro Incompleto</h2>
@@ -83,7 +83,7 @@ export default function CadastrarServico() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <Cabecalho />
 
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">

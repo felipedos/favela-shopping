@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../../contexts/AuthContext';
-import Header from '../components/Header';
+import Cabecalho from '../components/Cabecalho';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginCadastro() {
@@ -76,7 +76,7 @@ export default function LoginCadastro() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header showFullMenu={true}/>
+      <Cabecalho showFullMenu={true}/>
 
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg overflow-hidden">

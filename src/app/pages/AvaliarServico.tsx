@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { Avaliacao } from '../../types';
-import Header from '../components/Header';
+import Cabecalho from '../components/Cabecalho';
 import StarRating from '../components/StarRating';
 import { ArrowLeft } from 'lucide-react';
 
@@ -64,7 +64,7 @@ export default function AvaliarServico() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
+        <Cabecalho />
         <div className="container mx-auto px-4 py-12 text-center">
           <p className="text-gray-500">Carregando...</p>
         </div>
@@ -75,7 +75,7 @@ export default function AvaliarServico() {
   if (!avaliacao) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
+        <Cabecalho />
         <div className="container mx-auto px-4 py-12 text-center">
           <p className="text-gray-500">Avaliação não encontrada</p>
         </div>
@@ -87,7 +87,7 @@ export default function AvaliarServico() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <Cabecalho />
 
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">

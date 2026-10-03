@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { UtensilsCrossed, Star } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import Header from '../components/Header';
+import Cabecalho from '../components/Cabecalho';
 
 interface ComidaContratada {
   id: string;
@@ -59,7 +59,7 @@ export default function ComidasContratadas() {
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100">
-        <Header />
+        <Cabecalho />
         <div className="max-w-4xl mx-auto px-4 py-8 text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Faça login para ver suas comidas</h2>
           <Link to="/login-cadastro" className="text-orange-600 hover:underline">
@@ -72,7 +72,7 @@ export default function ComidasContratadas() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100">
-      <Header />
+      <Cabecalho />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="bg-gradient-to-r from-orange-600 to-amber-600 rounded-2xl p-8 mb-8 text-white shadow-lg">

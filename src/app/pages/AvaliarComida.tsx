@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router';
 import { ArrowLeft, UtensilsCrossed } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import Header from '../components/Header';
+import Cabecalho from '../components/Cabecalho';
 import StarRating from '../components/StarRating';
 
 interface AvaliacaoData {
@@ -88,7 +88,7 @@ export default function AvaliarComida() {
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100">
-        <Header />
+        <Cabecalho />
         <div className="max-w-4xl mx-auto px-4 py-8 text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Faça login para avaliar</h2>
         </div>
@@ -99,7 +99,7 @@ export default function AvaliarComida() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100">
-        <Header />
+        <Cabecalho />
         <div className="flex items-center justify-center h-96">
           <div className="w-12 h-12 border-4 border-orange-600 border-t-transparent rounded-full animate-spin"></div>
         </div>
@@ -110,7 +110,7 @@ export default function AvaliarComida() {
   if (!avaliacao) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100">
-        <Header />
+        <Cabecalho />
         <div className="max-w-4xl mx-auto px-4 py-8 text-center">
           <h2 className="text-2xl font-bold text-gray-800">Avaliação não encontrada</h2>
         </div>
@@ -124,7 +124,7 @@ export default function AvaliarComida() {
   if (jaAvaliado) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100">
-        <Header />
+        <Cabecalho />
         <div className="max-w-4xl mx-auto px-4 py-8 text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Você já avaliou esta comida</h2>
           <button
@@ -140,7 +140,7 @@ export default function AvaliarComida() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100">
-      <Header />
+      <Cabecalho />
 
       <main className="max-w-3xl mx-auto px-4 py-8">
         <button

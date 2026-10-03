@@ -12,7 +12,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
 import Chat from '../components/chat/Chat';
-import Header from '../components/Header';
+import Cabecalho from '../components/Cabecalho';
 
 import {
   getMeuUserId,
@@ -313,7 +313,7 @@ export default function Conversas() {
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header showFullMenu />
+        <Cabecalho showFullMenu />
 
         <div className="max-w-3xl mx-auto px-4 py-12 text-center">
           <MessageCircle
@@ -345,7 +345,7 @@ export default function Conversas() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header showFullMenu />
+      <Cabecalho showFullMenu />
 
       <main className="max-w-4xl mx-auto px-4 py-8">
         <button

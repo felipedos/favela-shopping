@@ -6,8 +6,11 @@ import { Food, CATEGORIAS_COMIDA } from '../../types';
 import { Search, Filter, UtensilsCrossed } from 'lucide-react';
 import SobreModal from '../components/SobreModal';
 import ContatoModal from '../components/ContatoModal';
-import Header from '../components/Header';
+import Cabecalho from '../components/Cabecalho';
 import PrivateImage from '../components/PrivateImage';
+import Rodape from '../components/Rodape';
+import GradeAnunciosDemonstrativos from '../components/GradeAnunciosDemonstrativos';
+import { ROTULOS_ACAO_ANUNCIO } from '../../mocks/dadosAnunciosDemonstrativos';
 
 export default function Comidas() {
   const { signOut } = useAuth();
@@ -146,33 +149,33 @@ export default function Comidas() {
     }
   };
 
-  const handleLogout = async () => {
+  const sair = async () => {
     await signOut();
     navigate('/');
   };
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50">
-        <Header showFullMenu={true} />
+      <div className="marketplace-page min-h-screen bg-background">
+        <Cabecalho showFullMenu={true} />
 
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto w-full max-w-7xl px-4 py-8 md:px-6 lg:px-8">
 
-          {/* 🔥 HEADER MANTIDO */}
-          <div className="bg-gradient-to-r from-orange-600 to-amber-600 rounded-2xl p-8 mb-8 text-white shadow-lg">
+          <div className="marketplace-hero marketplace-hero--food rounded-2xl p-6 sm:p-8 mb-8 text-text-main shadow-premium">
             <div className="flex items-center gap-3 mb-3">
               <UtensilsCrossed className="w-10 h-10" />
               <h1 className="text-4xl font-bold">Comidas</h1>
             </div>
-            <p className="text-orange-100 text-lg">
+            <p className="text-text-muted text-lg">
               Descubra delícias e sabores da sua comunidade
             </p>
           </div>
 
-          {/* FILTROS (PADRÃO SERVIÇOS) */}
-          <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <GradeAnunciosDemonstrativos categoryId="alimentacao" />
+
+          <div className="marketplace-filters bg-white rounded-xl shadow-sm ring-1 ring-slate-200 p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
-              <Filter size={20} className="text-orange-600" />
+              <Filter size={20} className="text-primary" />
               <h2 className="text-lg font-semibold">Filtros</h2>
             </div>
 
@@ -189,7 +192,7 @@ export default function Comidas() {
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border rounded-lg"
+                    className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
                     placeholder="Nome da comida..."
                   />
                 </div>
@@ -204,7 +207,7 @@ export default function Comidas() {
                   type="text"
                   value={bairroFilter}
                   onChange={(e) => setBairroFilter(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
                   placeholder="Filtrar por bairro..."
                 />
               </div>
@@ -217,7 +220,7 @@ export default function Comidas() {
                 <select
                   value={categoriaFilter}
                   onChange={(e) => setCategoriaFilter(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
                 >
                   <option value="">Todas</option>
                   {categorias.map((cat) => (
@@ -241,59 +244,49 @@ export default function Comidas() {
               <p className="text-gray-500">Nenhuma comida encontrada</p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="marketplace-grid marketplace-grid--catalog grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {comidas.map((comida) => (
-                <div
+                <Link
                   key={comida.id}
-                  className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition"
+                  to={`/comidas/${comida.id}`}
+                  className="marketplace-card mock-ad-card mock-ad-card--catalog group cursor-pointer transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-hover active:scale-[0.98] active:duration-100"
                 >
-                  {comida.foto &&
-                    fotoUrls[comida.foto] && (
+                  <div className="mock-ad-card__media">
+                    {comida.foto && fotoUrls[comida.foto] && (
                       <img
                         src={fotoUrls[comida.foto]}
                         alt={comida.nomeFood || ''}
-                        className="w-full h-48 object-cover"
+                        className="aspect-[4/3] w-full object-cover"
                         loading="lazy"
                         decoding="async"
                       />
                     )}
-
-                  <div className="p-4">
-                    <h3 className="text-lg font-bold mb-2">
-                      {comida.nomeFood}
-                    </h3>
-
-                    <p className="text-gray-600 text-sm mb-1">
-                      <strong>Vendedor:</strong> {comida.nome}
-                    </p>
-
-                    <p className="text-gray-600 text-sm mb-1">
-                      <strong>Bairro:</strong> {comida.bairro}
-                    </p>
-
-                    <p className="text-gray-600 text-sm mb-4">
-                      <strong>Categoria:</strong> {comida.categoria}
-                    </p>
-
-                    <Link
-                      to={`/comidas/${comida.id}`}
-                      className="block w-full text-center bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition"
-                    >
-                      Ver detalhes
-                    </Link>
-
-                    {comida.valor && (
-                      <p className="text-green-600 font-bold mt-2 text-center">
-                        R$ {Number(comida.valor).toFixed(2)}
-                      </p>
-                    )}
                   </div>
-                </div>
+
+                  <div className="mock-ad-card__body">
+                    <div className="mock-ad-card__details">
+                      <h3 className="line-clamp-2 min-h-12 font-bold text-text-main">{comida.nomeFood}</h3>
+                      {comida.valor !== null && comida.valor !== undefined && (
+                        <strong>R$ {Number(comida.valor).toFixed(2)}</strong>
+                      )}
+                    </div>
+                    <div className="mock-ad-card__metadata">
+                      {comida.nome && <span><strong>Vendedor:</strong> {comida.nome}</span>}
+                      {comida.bairro && <span><strong>Bairro:</strong> {comida.bairro}</span>}
+                      {comida.categoria && <span><strong>Categoria:</strong> {comida.categoria}</span>}
+                    </div>
+                    {comida.categoria && <div className="mock-ad-card__tags"><span>{comida.categoria}</span></div>}
+                    <span className="mock-ad-card__action">
+                      {ROTULOS_ACAO_ANUNCIO.alimentacao}
+                    </span>
+                  </div>
+                </Link>
               ))}
             </div>
           )}
         </div>
       </div>
+      <Rodape />
 
       <SobreModal open={showSobre} onClose={() => setShowSobre(false)} />
       <ContatoModal open={showContato} onClose={() => setShowContato(false)} />

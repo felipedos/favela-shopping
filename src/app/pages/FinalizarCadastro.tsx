@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../../contexts/AuthContext';
-import Header from '../components/Header';
+import Cabecalho from '../components/Cabecalho';
 import ImageUpload from '../components/ImageUpload';
 
 export default function FinalizarCadastro() {
@@ -53,7 +53,7 @@ export default function FinalizarCadastro() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header showFullMenu={true}/>
+      <Cabecalho showFullMenu={true}/>
 
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">

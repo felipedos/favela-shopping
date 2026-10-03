@@ -6,8 +6,11 @@ import { Servico, CATEGORIAS_SERVICO } from '../../types';
 import {  Wrench, LogOut, Search, Filter } from 'lucide-react';
 import SobreModal from '../components/SobreModal';
 import ContatoModal from '../components/ContatoModal';
-import Header from '../components/Header';
+import Cabecalho from '../components/Cabecalho';
 import PrivateImage from '../components/PrivateImage';
+import Rodape from '../components/Rodape';
+import GradeAnunciosDemonstrativos from '../components/GradeAnunciosDemonstrativos';
+import { ROTULOS_ACAO_ANUNCIO } from '../../mocks/dadosAnunciosDemonstrativos';
 
 export default function Servicos() {
   const { user, signOut, isProfileComplete } = useAuth();
@@ -146,30 +149,31 @@ export default function Servicos() {
     }
   };
 
-  const handleLogout = async () => {
+  const sair = async () => {
     await signOut();
     navigate('/');
   };
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50">
-      <Header showFullMenu={true} />
+      <div className="marketplace-page min-h-screen bg-background">
+      <Cabecalho showFullMenu={true} />
 
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto w-full max-w-7xl px-4 py-8 md:px-6 lg:px-8">
 
-            <div className="bg-gradient-to-r from-emerald-600 to-green-600 rounded-2xl p-8 mb-8 text-white shadow-lg">
+            <div className="marketplace-hero marketplace-hero--services rounded-2xl p-6 sm:p-8 mb-8 text-text-main shadow-premium">
             <div className="flex items-center gap-3 mb-3">
                 <Wrench className="w-10 h-10" />
                 <h1 className="text-4xl font-bold">Serviços</h1>
             </div>
-            <p className="text-green-100 text-lg">
+            <p className="text-text-muted text-lg">
                 Encontre profissionais e serviços na sua comunidade
             </p>
             </div>
-          <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <GradeAnunciosDemonstrativos categoryId="servicos" />
+          <div className="marketplace-filters bg-white rounded-xl shadow-sm ring-1 ring-slate-200 p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
-              <Filter size={20} className="text-purple-600" />
+              <Filter size={20} className="text-primary" />
               <h2 className="text-lg font-semibold">Filtros</h2>
             </div>
 
@@ -184,7 +188,7 @@ export default function Servicos() {
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
                     placeholder="Nome do serviço..."
                   />
                 </div>
@@ -198,7 +202,7 @@ export default function Servicos() {
                   type="text"
                   value={bairroFilter}
                   onChange={(e) => setBairroFilter(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
                   placeholder="Filtrar por bairro..."
                 />
               </div>
@@ -210,7 +214,7 @@ export default function Servicos() {
                 <select
                   value={categoriaFilter}
                   onChange={(e) => setCategoriaFilter(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
                 >
                   <option value="">Todas</option>
                   {categorias.map((cat) => (
@@ -232,43 +236,54 @@ export default function Servicos() {
               <p className="text-gray-500">Nenhum serviço encontrado</p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="marketplace-grid marketplace-grid--services grid md:grid-cols-2 gap-6">
               {servicos.map((servico) => (
-                <div key={servico.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
-                  {servico.foto &&
-                    fotoUrls[servico.foto] && (
+                <Link
+                  key={servico.id}
+                  to={`/servicos/${servico.id}`}
+                  className="marketplace-card mock-ad-card mock-ad-card--service group cursor-pointer transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-hover active:scale-[0.98] active:duration-100"
+                >
+                  <div className="mock-ad-service-head">
+                    {servico.foto && fotoUrls[servico.foto] ? (
                       <img
                         src={fotoUrls[servico.foto]}
                         alt={servico.nomeServico || ''}
-                        className="w-full h-48 object-cover"
+                        className="mock-ad-avatar"
                         loading="lazy"
                         decoding="async"
                       />
+                    ) : (
+                      <div className="mock-ad-avatar flex items-center justify-center bg-background text-primary">
+                        <Wrench size={24} />
+                      </div>
                     )}
-                  <div className="p-4">
-                    <h3 className="text-lg font-bold mb-2">{servico.nomeServico}</h3>
-                    <p className="text-gray-600 text-sm mb-1">
-                      <strong>Prestador:</strong> {servico.nome}
-                    </p>
-                    <p className="text-gray-600 text-sm mb-1">
-                      <strong>Bairro:</strong> {servico.bairro}
-                    </p>
-                    <p className="text-gray-600 text-sm mb-4">
-                      <strong>Categoria:</strong> {servico.categoria}
-                    </p>
-                    <Link
-                      to={`/servicos/${servico.id}`}
-                      className="block w-full text-center bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition"
-                    >
-                      Contactar
-                    </Link>
+                    <div className="min-w-0">
+                      {servico.nome && <p className="text-xs font-semibold text-text-muted">Prestador local</p>}
+                      <h3 className="line-clamp-2 min-h-12 font-bold text-text-main">{servico.nomeServico}</h3>
+                      <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-text-muted">
+                        {servico.nome && <span><strong>Prestador:</strong> {servico.nome}</span>}
+                        {servico.bairro && <span><strong>Bairro:</strong> {servico.bairro}</span>}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                  <div className="mock-ad-card__body">
+                    <div className="mock-ad-card__details">
+                      {servico.valor !== null && servico.valor !== undefined && <strong>{Number(servico.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong>}
+                      {servico.categoria && <span><strong>Categoria:</strong> {servico.categoria}</span>}
+                      {(servico.inico || servico.fim) && <span><strong>Horário:</strong> {[servico.inico, servico.fim].filter(Boolean).join(' - ')}</span>}
+                    </div>
+                    {servico.categoria && <div className="mock-ad-card__tags"><span>{servico.categoria}</span></div>}
+                    <span className="mock-ad-card__action mock-ad-card__action--service">
+                      {ROTULOS_ACAO_ANUNCIO.servicos}
+                    </span>
+                  </div>
+                </Link>
               ))}
             </div>
           )}
         </div>
       </div>
+      <Rodape />
 
       <SobreModal open={showSobre} onClose={() => setShowSobre(false)} />
       <ContatoModal open={showContato} onClose={() => setShowContato(false)} />
