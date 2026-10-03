@@ -20,6 +20,7 @@ import { ANUNCIOS_DEMONSTRATIVOS } from '../../mocks/databaseMock';
 import SobreModal from './SobreModal';
 import ContatoModal from './ContatoModal';
 import PrivateImage from './PrivateImage';
+import AcessoConversas from './AcessoConversas';
 
 interface PropriedadesCabecalho {
   showFullMenu?: boolean;
@@ -180,6 +181,7 @@ export default function Cabecalho({
           </form>
 
           <div className="flex shrink-0 items-center gap-2">
+            <AcessoConversas />
             {user && (
               <Link to="/editar-perfil" className="hidden items-center gap-2 text-sm font-semibold text-text-main transition-all duration-300 ease-out hover:text-primary lg:flex">
                 {profile?.self ? (

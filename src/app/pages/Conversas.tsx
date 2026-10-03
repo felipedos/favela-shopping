@@ -3,9 +3,6 @@ import { useNavigate } from 'react-router';
 import {
   ArrowLeft,
   MessageCircle,
-  Package,
-  Wrench,
-  UtensilsCrossed,
 } from 'lucide-react';
 
 import { supabase } from '../../lib/supabase';
@@ -290,42 +287,51 @@ export default function Conversas() {
     );
   }
 
-  function renderIcone(
-    tipo: string | null
-  ) {
+  function rotuloCategoria(tipo: string | null) {
     if (tipo === 'servico') {
-      return (
-        <Wrench size={22} />
-      );
+      return 'Serviço';
     }
 
     if (tipo === 'comida') {
-      return (
-        <UtensilsCrossed
-          size={22}
-        />
-      );
+      return 'Comida';
     }
 
-    return <Package size={22} />;
+    return tipo === 'produto' ? 'Produto' : 'Anúncio';
+  }
+
+  function obterIniciais(nome: string) {
+    const partesNome = nome
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .filter((parte) => !['da', 'das', 'de', 'do', 'dos', 'e'].includes(parte.toLocaleLowerCase('pt-BR')));
+    if (partesNome.length === 0) return 'U';
+    const nomesParaIniciais = partesNome.length > 1
+      ? [partesNome[0], partesNome[partesNome.length - 1]]
+      : partesNome;
+    return nomesParaIniciais
+      .map((parte) => parte[0])
+      .join('')
+      .toLocaleUpperCase('pt-BR');
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <Cabecalho showFullMenu />
 
-        <div className="max-w-3xl mx-auto px-4 py-12 text-center">
+        <div className="mx-auto max-w-3xl px-4 py-12 text-center md:px-6">
           <MessageCircle
             size={48}
-            className="mx-auto mb-4 text-gray-400"
+            strokeWidth={1.7}
+            className="mx-auto mb-4 text-primary"
           />
 
-          <h1 className="text-2xl font-bold mb-3">
+          <h1 className="mb-3 text-2xl font-bold text-text-main">
             Minhas Conversas
           </h1>
 
-          <p className="text-gray-600 mb-6">
+          <p className="mb-6 text-text-muted">
             Faça login para acessar suas conversas.
           </p>
 
@@ -334,7 +340,7 @@ export default function Conversas() {
             onClick={() =>
               navigate('/login')
             }
-            className="bg-purple-600 text-white px-6 py-3 rounded-lg"
+            className="rounded-lg bg-secondary px-6 py-3 font-semibold text-white transition-colors hover:bg-secondary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2"
           >
             Fazer login
           </button>
@@ -344,35 +350,35 @@ export default function Conversas() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Cabecalho showFullMenu />
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
+      <main className="mx-auto max-w-4xl px-4 py-8 md:px-6">
         <button
           type="button"
           onClick={() =>
             navigate(-1)
           }
-          className="flex items-center gap-2 text-purple-600 hover:text-purple-800 mb-6"
+          className="mb-6 inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-semibold text-primary transition-colors hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={18} strokeWidth={1.8} />
 
           Voltar
         </button>
 
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6">
-            <div className="flex items-center gap-3">
-              <MessageCircle
-                size={30}
-              />
+        <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-premium">
+          <div className="border-b border-border bg-slate-50 p-5 sm:p-6">
+            <div className="flex items-center gap-4">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-primary">
+                <MessageCircle size={23} strokeWidth={1.7} />
+              </span>
 
               <div>
-                <h1 className="text-2xl font-bold">
+                <h1 className="text-2xl font-bold text-text-main">
                   Minhas Conversas
                 </h1>
 
-                <p className="text-purple-100 text-sm">
+                <p className="mt-1 text-sm text-text-muted">
                   Consulte suas mensagens com clientes e vendedores.
                 </p>
               </div>
@@ -380,13 +386,13 @@ export default function Conversas() {
           </div>
 
           {carregando && (
-            <div className="p-10 text-center text-gray-500">
+            <div className="p-10 text-center text-sm text-text-muted">
               Carregando conversas...
             </div>
           )}
 
           {erro && (
-            <div className="m-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+            <div className="m-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
               {erro}
             </div>
           )}
@@ -397,14 +403,15 @@ export default function Conversas() {
               <div className="p-12 text-center">
                 <MessageCircle
                   size={48}
-                  className="mx-auto text-gray-300 mb-4"
+                  strokeWidth={1.6}
+                  className="mx-auto mb-4 text-slate-300"
                 />
 
-                <h2 className="font-semibold text-gray-700">
+                <h2 className="font-semibold text-text-main">
                   Nenhuma conversa ainda
                 </h2>
 
-                <p className="text-gray-500 text-sm mt-2">
+                <p className="mt-2 text-sm text-text-muted">
                   Quando você entrar em contato com alguém ou receber uma mensagem, ela aparecerá aqui.
                 </p>
               </div>
@@ -423,37 +430,38 @@ export default function Conversas() {
                       conversa
                     )
                   }
-                  className="w-full text-left flex items-center gap-4 p-4 border-b hover:bg-gray-50 transition"
+                  className="flex w-full items-center gap-4 border-b border-border/70 p-4 text-left transition-colors duration-200 hover:bg-slate-50 focus-visible:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary sm:p-5"
                 >
-                  <div className="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center flex-shrink-0">
-                    {renderIcone(
-                      conversa.tipo_anuncio
-                    )}
+                  <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-blue-50 text-sm font-bold text-primary ring-1 ring-inset ring-primary/10">
+                    {obterIniciais(conversa.nomeOutroUsuario)}
+                    <span className="absolute -bottom-1 -right-2 max-w-[4.5rem] truncate rounded-full border border-border bg-surface px-1.5 py-0.5 text-[9px] font-semibold leading-none text-text-muted shadow-premium">
+                      {rotuloCategoria(conversa.tipo_anuncio)}
+                    </span>
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-3">
-                      <h2 className="font-semibold text-gray-900 truncate">
+                      <h2 className="truncate text-sm font-semibold text-text-main">
                         {
                           conversa.nomeOutroUsuario
                         }
                       </h2>
 
-                      <span className="text-xs text-gray-400 whitespace-nowrap">
+                      <span className="whitespace-nowrap text-xs text-text-muted">
                         {formatarData(
                           conversa.dataUltimaMensagem
                         )}
                       </span>
                     </div>
 
-                    <div className="text-sm text-purple-600 truncate mt-1">
+                    <div className="mt-1 truncate text-xs font-medium text-primary">
                       {
                         conversa.tituloAnuncio
                       }
                     </div>
 
                     <div className="flex items-center justify-between gap-3 mt-1">
-                      <p className="text-sm text-gray-500 truncate">
+                      <p className="truncate text-sm text-slate-400">
                         {
                           conversa.ultimaMensagem
                         }
@@ -461,7 +469,7 @@ export default function Conversas() {
 
                       {conversa.naoLidas >
                         0 && (
-                        <span className="min-w-6 h-6 px-2 flex items-center justify-center rounded-full bg-red-500 text-white text-xs font-bold">
+                        <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-red-600 px-2 text-xs font-bold text-white">
                           {
                             conversa.naoLidas
                           }
